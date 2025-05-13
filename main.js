@@ -1,50 +1,95 @@
 // intellisens pour le développement
 /// <reference path="node_modules/phaser/types/phaser.d.ts" />
 
-// scene principale
-class MainScene extends Phaser.Scene {
-  constructor() {
-    super('MainScene');
-  }
+/**
+ * Affichage plein écran
+ * @param {Phaser.Scene} scene - Scene à laquelle s'applique la fonction
+ * @param {string} enterKey - String représentant la touche pour activer le plein écran
+ * @param {string} exitKey - String représentant la touche pour quitter le plein écran
+ */
+function fullscreenToggle(scene, enterKey, exitKey) {
+  /*  test "bouton" plein écran
+  const fsBtn = this.add.text(700, 20, 'fullscreen', {
+    font: '40px Arial',
+    color: '#ffffff',
+    padding: { x: 10, y: 5 }
+  })
+    .setInteractive()
+    .setScrollFactor(0)
+    .setDepth(1000); // z-index
 
-  preload() {
-    // logic
+  fsBtn.on('pointerup', () => {
+    if (this.scale.isFullscreen) this.scale.stopFullscreen();
+    else this.scale.startFullscreen();
+  });
+  */
+ 
+  // activer plein écran
+  scene.input.keyboard?.addKey(enterKey).on('down', () => {
+    if (!scene.scale.isFullscreen) scene.scale.startFullscreen();
+  });
+
+  // quitter plein écran
+  scene.input.keyboard?.addKey(exitKey).on('down', () => {
+    if (scene.scale.isFullscreen) scene.scale.stopFullscreen();
+  });
+}
+
+
+// scene menu
+class MenuScene extends Phaser.Scene {
+  constructor() {
+    super({ key: 'MenuScene' });
   }
 
   create() {
-    // test fullscreen toggle "btn"
-    /*
-    const fsBtn = this.add.text(700, 20, 'fullscreen', {
-      font: '20px Arial',
-      color: '#ffffff',
-      padding: { x: 10, y: 5 }
-    })
-      .setInteractive()
-      .setScrollFactor(0)
-      .setDepth(1000); // z-index
+    fullscreenToggle(this, 'SPACE', 'ESC');
 
-    fsBtn.on('pointerup', () => {
-      if (this.scale.isFullscreen) this.scale.stopFullscreen();
-      else this.scale.startFullscreen();
-    });
-    */
+    const menuTxt = this.add.text(
+      this.scale.width / 2,
+      this.scale.height / 2,
+      'Menu',
+      {
+        font: '40px Arial',
+        color:'#000000'
+      }
+    )
+    .setOrigin(0.5)
+    .setInteractive();
 
-    // activer plein écran avec 'ESPACE'
-    this.input.keyboard?.addKey('SPACE').on('down', () => {
-      if (!this.scale.isFullscreen) this.scale.startFullscreen();
+    menuTxt.on('pointerup', () => {
+      this.scene.start('MainScene');
     });
+  }
+}
 
-    // quitter plein écran avec 'ECHAP'
-    this.input.keyboard?.addKey('ESC').on('down', () => {
-      if (this.scale.isFullscreen) this.scale.stopFullscreen();
-    });
+
+// scene principale
+class MainScene extends Phaser.Scene {
+  constructor() {
+    super({ key: 'MainScene' });
+  }
+
+  preload() {
+    // logique
+  }
+
+  create() {
+    fullscreenToggle(this, 'SPACE', 'ESC');
 
     // barre tâches
-    const tasksBar = this.add.rectangle(100, 200, 100, 200, 0xe3eefa);
+    const tasksBar = this.add.rectangle(
+      this.scale.width / 2,
+      this.scale.height - 25,
+      this.scale.width,
+      50,
+      0xe3eefa,
+      0.75
+    );
   }
 
   update() {
-    // logic
+    // logique
   }
 }
 
@@ -59,6 +104,7 @@ let config = {
     },
     backgroundColor: '#b6d1e5',
     scene: [MainScene]
+    // scene: [MenuScene, MainScene]
 }
 
 // instanciation du jeu
