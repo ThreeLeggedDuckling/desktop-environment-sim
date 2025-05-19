@@ -7,8 +7,10 @@ export class BaseScene extends Phaser.Scene {
   }
 
   create() {
-    this.setupFullscreenToggle('SPACE', 'ESC');   // permet l'affichage en mode plein écran
-    this.input.mouse.disableContextMenu();    // désactive le comportement clic doit -> menu contextuel
+    this.input.mouse.disableContextMenu();  // désactive le comportement clic doit -> menu contextuel
+
+    this.setupFullscreenToggle('SPACE', 'ESC');
+    this.returnToMenu();
   }
 
   /**
@@ -27,4 +29,9 @@ export class BaseScene extends Phaser.Scene {
       if (this.scale.isFullscreen) this.scale.stopFullscreen();
     });
   }
+
+  returnToMenu(key = 'BACKSPACE') {
+    this.input.keyboard?.addKey(key).on('down', () => { this.scene.start('MenuScene') })
+  }
+
 }

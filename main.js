@@ -12,8 +12,9 @@ let config = {
     width: 1920,
     height: 1080,
   },
-  // scene: [DesktopScene]
-  scene: [MenuScene, DesktopScene, DragExerciceScene]
+  scene: [DesktopScene]
+  // scene: [DragExerciceScene]
+  // scene: [MenuScene, DesktopScene, DragExerciceScene]
 }
 
 const game = new Phaser.Game(config);

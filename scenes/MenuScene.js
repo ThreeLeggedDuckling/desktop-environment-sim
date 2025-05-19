@@ -1,4 +1,5 @@
 import { BaseScene } from './BaseScene.js';
+import { SceneSelectionButton } from '../classes/SceneSelectionButton.js';
 
 export class MenuScene extends BaseScene {
   constructor() {
@@ -8,20 +9,20 @@ export class MenuScene extends BaseScene {
   create() {
     super.create();   // création BaseScene
 
-    const menuTxt = this.add.text(
-      this.scale.width / 2,
-      this.scale.height / 2,
-      'Menu',
-      {
-        font: '40px Arial',
-        color:'#ffffff'
-      }
-    )
-    .setOrigin(0.5)
-    .setInteractive();
+    const menuTxt = this.add.text( this.scale.width / 2, 200, 'Menu', { font: '40px Arial', color:'#ffffff' } )
+    .setOrigin(0.5);
 
-    menuTxt.on('pointerup', () => {
-      this.scene.start('MainScene');
-    });
+    const selections = [
+      new SceneSelectionButton(this, this.scale.width / 4, 500, 'DesktopScene', 'Bac à sable'),
+      new SceneSelectionButton(this, this.scale.width / 2, 500, 'DragExerciceScene', 'Exercice drag'),
+    ]
+
+    // for (const elem of selections) {
+    //   this.tweens.add({
+    //     targets: elem,
+        
+    //   })
+    // }
+    
   }
 }

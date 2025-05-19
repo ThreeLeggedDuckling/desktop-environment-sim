@@ -3,7 +3,7 @@ import { DesktopIcon } from '../classes/DesktopIcon.js';
 
 export class DesktopScene extends BaseScene {
   constructor() {
-    super({ key: 'MainScene' });
+    super({ key: 'DesktopScene' });
   }
 
   preload() {   // assests à pré-charger
@@ -24,7 +24,7 @@ export class DesktopScene extends BaseScene {
       this.duckIcon = new DesktopIcon(this, 40, 100, 'ducky', 'canard.png'),
       this.emptyBinIcon = new DesktopIcon(this, 40, 200, 'binEmpty', 'Corbeille'),
     ];
-    for (let icon of this.icons) {this.add.existing(icon) }
+    for (let icon of this.icons) { this.add.existing(icon); }
 
     this.input.on('pointerdown', (pointer, position) => {
       // contextMenu.setActive(false).setVisible(false);
@@ -36,7 +36,9 @@ export class DesktopScene extends BaseScene {
         contextMenu = new Phaser.GameObjects.Text(this, pointer.x, pointer.y, 'contextMenu', { color: '#ffffff' });
         this.add.existing(contextMenu);
       }
-    })
+    });
+
+    this.input.on('dragstart', (pointer, desktopIcon) => { this.children.bringToTop(desktopIcon); });
 
 
     
