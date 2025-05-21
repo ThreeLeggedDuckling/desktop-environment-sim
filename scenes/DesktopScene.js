@@ -15,6 +15,7 @@ export class DesktopScene extends BaseScene {
   create() {
     super.create();   // création BaseScene
 
+    let lastClick = 0;
     let contextMenu;
 
     // DEV : test data display
@@ -22,26 +23,39 @@ export class DesktopScene extends BaseScene {
 
     this.icons = [
       this.duckIcon = new DesktopIcon(this, 40, 100, 'ducky', 'canard.png'),
-      this.emptyBinIcon = new DesktopIcon(this, 40, 200, 'binEmpty', 'Corbeille'),
+      this.recycleBinIcon = new DesktopIcon(this, 40, 200, ['binEmpty', 'binFull'], 'Corbeille'),
     ];
-    for (let icon of this.icons) { this.add.existing(icon); }
 
     this.input.on('pointerdown', (pointer, position) => {
-      // contextMenu.setActive(false).setVisible(false);
-      let clicked = position.find(obj => obj instanceof DesktopIcon);
-      this.icons.forEach(icon => {
+      let clicked = position.find(obj => obj instanceof DesktopIcon);   // détermine dernière icône sélectionnée
+
+      for (let icon of this.icons) {
         if (icon !== clicked || pointer.rightButtonDown()) icon.setSelected(false);
-      })
+        if (icon === clicked && this.checkDoubleClick()) {
+          console.log(icon.name, 'opened');
+          icon.setSelected(false);
+        }
+      }
+      
       if (pointer.rightButtonDown()) {
         contextMenu = new Phaser.GameObjects.Text(this, pointer.x, pointer.y, 'contextMenu', { color: '#ffffff' });
         this.add.existing(contextMenu);
       }
+
+      // menu contextuel
+      // contextMenu.setActive(false).setVisible(false);
     });
 
     this.input.on('dragstart', (pointer, desktopIcon) => { this.children.bringToTop(desktopIcon); });
+    this.input.on('dragend', (pointer, desktopIcon) => {    // MODIFIER POUR FOLDER OBJECT
+      const recycleBinBounds = this.recycleBinIcon.getBounds();
+      const isOverRecycleBin = Phaser.Geom.Rectangle.Contains(recycleBinBounds, pointer.x, pointer.y);
+      if (isOverRecycleBin && desktopIcon !== this.recycleBinIcon) {
+        this.recycleBinIcon.setEmptyFolder(false);
+        this.children.remove(desktopIcon);
+      }
+    })
 
-
-    
 
     // barre tâches => A retravailler pour faire composant !!
     const tasksBar = this.add.rectangle(

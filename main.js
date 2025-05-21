@@ -3,6 +3,7 @@
 import { MenuScene } from './scenes/MenuScene.js'
 import { DesktopScene } from './scenes/DesktopScene.js'
 import { DragExerciceScene } from './scenes/DragExerciceScene.js'
+import { TestScene } from './scenes/TestScene.js'
 
 let config = {
   type: Phaser.AUTO,
@@ -12,9 +13,10 @@ let config = {
     width: 1920,
     height: 1080,
   },
+  // scene: [TestScene]
+  // scene: [MenuScene, DesktopScene, DragExerciceScene]
   scene: [DesktopScene]
   // scene: [DragExerciceScene]
-  // scene: [MenuScene, DesktopScene, DragExerciceScene]
 }
 
 const game = new Phaser.Game(config);
