@@ -1,6 +1,6 @@
 import { BaseScene } from "./BaseScene.js";
 
-import { FileType, FileObject, FolderObject } from "../classes/FileClasses.js";
+import { DEFAULT_FILETYPES, FileObject, FolderObject,  } from "../classes/FileClasses.js";
 import { DesktopIcon } from "../classes/DesktopIcon.js";
 
 /**
@@ -24,20 +24,14 @@ export class TestScene extends BaseScene {
 	create() {
 		super.create();   // création BaseScene
 
-		// Types de fichiers
-		const pngType = new FileType('image', '.png', 'picture');
-		const jpgType = new FileType('image', '.jpg', 'picture');
-		const folderType = new FileType('dossier', '', 'folder');
-		const recycleBinType = new FileType('dossier', '', ['binEmpty', 'binFull']);
-
 		// Fichiers
-		const catJPG = new FileObject('cat', jpgType, 'catG');
-		const duckPNG = new FileObject('duck', pngType, 'ducky');
-		const imgPNG = new FileObject('bug', pngType, '');
-		const folder1 = new FolderObject('Mes images', folderType, [catJPG, duckPNG, imgPNG]);
+		const catJPG = new FileObject('cat', DEFAULT_FILETYPES.JPG, 'catG');
+		const duckPNG = new FileObject('duck', DEFAULT_FILETYPES.PNG, 'ducky');
+		const imgPNG = new FileObject('bug', DEFAULT_FILETYPES.PNG, '');
+		const folder1 = new FolderObject('Mes images', DEFAULT_FILETYPES.FOLDER, [catJPG, duckPNG, imgPNG]);
 
 		// Corbeille
-		const recycleBin = new FolderObject('Corbeille', recycleBinType);
+		const recycleBin = new FolderObject('Corbeille', DEFAULT_FILETYPES.RECYCLEBIN);
 		// @ts-ignore	- évite que VSCode rale pour rien
 		recycleBin.empty = function() {
 			this.content = [];
