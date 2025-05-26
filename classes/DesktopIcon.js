@@ -1,3 +1,5 @@
+import { FileObject, FolderObject } from "./FileClasses.js";
+
 /**
  * Icône de bureau
  */
@@ -7,19 +9,20 @@ export class DesktopIcon extends Phaser.GameObjects.Container {
    * @param {Phaser.Scene} scene - Scene (paramètre nécessaire).
    * @param {number} x - Position horizontale dans la scene.
    * @param {number} y - Position verticale dans la scene.
-   * @param {string | string[]} texture - Clé ou tableau de clés des images de l'icône. Dans le cas d'un tableau, le format doit être [vide, rempli].
-   * @param {string} legend - Texte de l'icône
-   * @param {boolean} isEmptyFolder - Etat permettant de sélectionner la texture à appliquer.
+   * @param {FileObject} file - Fichier ou dossier auquel se rapporte l'icone.
    * @param {number} scale - Modificateur de l'échelle de l'image.
    */
-  constructor(scene, x, y, texture, legend, isEmptyFolder = true, scale = 1) {
+  constructor(scene, x, y, file, scale = 1) {
     super(scene, x, y);
 
-    this.name = legend;
-    this.isEmptyFolder = isEmptyFolder;
+    this.file = file;
+    if (file instanceof FolderObject) this.isEmptyFolder = (file.content.length == 0);
+    else this.isEmptyFolder = true;
+
     this.isSelected = false    // Variable dernière icône sélectionnée
 
     // Récupération de la texture à appliquer
+    const texture = (file.fileType.type == 'image' && scene.game.textures.exists(file.content)) ? file.content : file.fileType.texture;
     this.textureKeys = Array.isArray(texture) ? texture : [texture, texture];
     const activeTexture = this.isEmptyFolder ? this.textureKeys[0] : this.textureKeys[1];
 
@@ -30,7 +33,7 @@ export class DesktopIcon extends Phaser.GameObjects.Container {
 
     this.background = scene.add.rectangle(0, -20, iconWidth + 20, iconHeight + 30, 0xffffff).setAlpha(0);
     this.icon = scene.add.image(0, 0, activeTexture).setScale(scale).setOrigin(0.5, 1);
-    this.iconTxt = scene.add.text(0, 10, legend, { fontSize: '12px' }).setOrigin(0.5, 0);
+    this.iconTxt = scene.add.text(0, 10, `${file.name}${file.fileType.extension}`, { fontSize: '12px' }).setOrigin(0.5, 0);
 
     // Ajout des conteneurs
     this.add(this.background);
@@ -52,7 +55,7 @@ export class DesktopIcon extends Phaser.GameObjects.Container {
   }
 
   setEmptyFolder(isEmpty) {
-    if (this.isEmptyFolder !== isEmpty) {
+    if (this.file instanceof FolderObject && this.isEmptyFolder !== isEmpty) {
       this.isEmptyFolder = isEmpty;
       this.updateIconTexture();
     }

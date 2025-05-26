@@ -13,9 +13,10 @@ let config = {
     width: 1920,
     height: 1080,
   },
-  // scene: [TestScene]
+  scene: [TestScene]
   // scene: [MenuScene, DesktopScene, DragExerciceScene]
-  scene: [DesktopScene]
+  // scene: [MenuScene, DesktopScene, DragExerciceScene, TestScene]
+  // scene: [DesktopScene]
   // scene: [DragExerciceScene]
 }
 

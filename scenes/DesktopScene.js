@@ -21,6 +21,7 @@ export class DesktopScene extends BaseScene {
     // DEV : test data display
     this.testInfos = this.add.text(this.scale.width / 2, 15, '').setOrigin(0.5, 0);
 
+    //  METTRE A JOUR AVEC BONNE VERSION CONSTRUCTEUR
     this.icons = [
       this.duckIcon = new DesktopIcon(this, 40, 100, 'ducky', 'canard.png'),
       this.recycleBinIcon = new DesktopIcon(this, 40, 200, ['binEmpty', 'binFull'], 'Corbeille'),

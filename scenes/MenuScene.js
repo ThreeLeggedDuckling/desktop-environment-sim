@@ -15,6 +15,7 @@ export class MenuScene extends BaseScene {
     const selections = [
       new SceneSelectionButton(this, this.scale.width / 4, 500, 'DesktopScene', 'Bac à sable'),
       new SceneSelectionButton(this, this.scale.width / 2, 500, 'DragExerciceScene', 'Exercice drag'),
+      new SceneSelectionButton(this, this.scale.width / 4 * 3, 500, 'TestScene', 'dev test'),
     ]
 
     // for (const elem of selections) {
