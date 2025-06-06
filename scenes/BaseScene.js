@@ -1,51 +1,70 @@
 /**
-* Base pour les scenes du jeu, comprend les fonctionnalités : toggle fullscreen, disable context menu.
-*/
+ * Base scene implementing needed functions for other scenes :
+ * - preaload()
+ * - setupFullscreenToggle()
+ * - returnToMenu()
+ * - checkDoubleClick()
+ */
 export class BaseScene extends Phaser.Scene {
   constructor(key) {
     super(key);
   }
-  
-  create() {
-    this.firstClickTime = 0;  // variable pour double click
-    
-    this.input.mouse.disableContextMenu();  // désactive le comportement clic doit -> menu contextuel
-    
-    this.setupFullscreenToggle('SPACE', 'ESC');
-    this.returnToMenu();
+
+  preload() {
+    // Icons assets
+    this.load.image('binEmpty', 'assets/icons/recyclebin_empty.png');
+		this.load.image('binFull', 'assets/icons/recyclebin_full.png');
+		this.load.image('catG', 'assets/icons/pixelCatGrey.png');
+		this.load.image('catO', 'assets/icons/pixelCatOrange.png');
+		this.load.image('ducky', 'assets/icons/pixelDuck.png');
+		this.load.image('folder', 'assets/icons/folder.png');
+		this.load.image('picture', 'assets/icons/picture.png');
+
+    // Misc assets
+		this.load.image('astronautJPG', 'assets/misc/astronaut.jpg');
+		this.load.image('chickenJPG', 'assets/misc/chicken.jpg');
+		this.load.image('flowersPNG', 'assets/misc/flowers.png');
   }
   
-  
-  // Fonctions additionnelles
+  create() {
+    // Store click occurence used in checkDoubleClick()
+    this.firstClickTime = 0;
+    // Disable browser right click behavior
+    this.input.mouse.disableContextMenu();
+    // Allow fullscreen toggle
+    this.setupFullscreenToggle('SPACE', 'ESC');
+    // Allow keyboard shortcut to go to main menu scene
+    this.returnToMainMenu();
+  }
   
   /**
-  * Permet de démarrer et d'arrêter l'affichage en plein écran.
-  * @param {string} enterKey - Chaîne de caractères représentant la touche pour activer
-  * @param {string} exitKey - Chaîne de caractères représentant la touche pour quitter
+   * Enter and exit fullscreen mode.
+   * @param {string} enterKey - Key to enter fullscreen
+   * @param {string} exitKey - Key to exit fullscreen
   */
   setupFullscreenToggle(enterKey, exitKey) {
-    // activer plein écran
+    // Enter mode
     this.input.keyboard?.addKey(enterKey).on('down', () => {
       if (!this.scale.isFullscreen) this.scale.startFullscreen();
     });
     
-    // quitter plein écran
+    // Exit mode
     this.input.keyboard?.addKey(exitKey).on('down', () => {
       if (this.scale.isFullscreen) this.scale.stopFullscreen();
     });
   }
 
   /**
-   * Permet de retourner au menu principal
-   * @param {string} key - Chaîne de caractères représentant la touche à utiliser
+   * Allow quick navigation to main menu scene
+   * @param {string} key
    */
-  returnToMenu(key = 'BACKSPACE') {
+  returnToMainMenu(key = 'BACKSPACE') {
     this.input.keyboard?.addKey(key).on('down', () => { this.scene.start('MenuScene') })
   }
   
   /**
-   * Détermine si un double click survient endéans un certain interval
-   * @param {number} interval - Interval exprimé en milisecondes (par défaut 500ms)
+   * Detect if two clicks occure within a given interval
+   * @param {number} interval - Time in milliseconds. Default set to 500ms.
    * @returns 
    */
   checkDoubleClick(interval = 500) {
