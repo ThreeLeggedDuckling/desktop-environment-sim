@@ -1,7 +1,9 @@
 import { BaseScene } from "./BaseScene.js";
 
-import { DEFAULT_FILETYPES, FileObject, FolderObject,  } from "../classes/FileClasses.js";
-import { DesktopIcon } from "../classes/DesktopIcon.js";
+import { DEFAULT_FILETYPES, FileObject, FileType, FolderObject,  } from "../classes/Files.js";
+import { DesktopIcon, Icon } from "../classes/Icons.js";
+import { DialogWindow } from "../classes/DialogWindow.js";
+import { TaskBar } from "../classes/TaskBar.js";
 
 /**
  * Classe de test uniquement utile au développement
@@ -12,104 +14,79 @@ export class TestScene extends BaseScene {
 	}
 
 	preload() {
-		this.load.image('binEmpty', 'assets/recyclebin_empty.png');
-		this.load.image('binFull', 'assets/recyclebin_full.png');
-		this.load.image('catG', 'assets/pixelCatGrey.png');
-		this.load.image('catO', 'assets/pixelCatOrange.png');
-		this.load.image('ducky', 'assets/pixelDuck.png');
-		this.load.image('folder', 'assets/folder.png');
-		this.load.image('picture', 'assets/picture.png');
+		this.load.image('binEmpty', 'assets/icons/recyclebin_empty.png');
+		this.load.image('binFull', 'assets/icons/recyclebin_full.png');
+		this.load.image('catG', 'assets/icons/pixelCatGrey.png');
+		this.load.image('catO', 'assets/icons/pixelCatOrange.png');
+		this.load.image('ducky', 'assets/icons/pixelDuck.png');
+		this.load.image('folder', 'assets/icons/folder.png');
+		this.load.image('picture', 'assets/icons/picture.png');
+
+		this.load.image('astronautJPG', 'assets/misc/astronaut.jpg');
+		this.load.image('chickenJPG', 'assets/misc/chicken.jpg');
+		this.load.image('flowersPNG', 'assets/misc/flowers.png');
 	}
 
 	create() {
 		super.create();   // création BaseScene
 
-		// Fichiers
-		const catJPG = new FileObject('cat', DEFAULT_FILETYPES.JPG, 'catG');
-		const duckPNG = new FileObject('duck', DEFAULT_FILETYPES.PNG, 'ducky');
-		const imgPNG = new FileObject('bug', DEFAULT_FILETYPES.PNG, '');
-		const folder1 = new FolderObject('Mes images', DEFAULT_FILETYPES.FOLDER, [catJPG, duckPNG, imgPNG]);
+		const taskBar = new TaskBar(this);
+		
+		// const testIcon = new Icon(this, 50, 110, new FileObject('test icon', DEFAULT_FILETYPES.JPG, ''), 64);
+		const pouleShort = new DesktopIcon(this, 50, 110, new FileObject('test1', DEFAULT_FILETYPES.JPG, 'chickenJPG'));
+		const pouleLong = new DesktopIcon(this, 150, 110, new FileObject('UnePoulePasSurUnMurEtSansPainDur', DEFAULT_FILETYPES.JPG, 'chickenJPG'));
+		const fleurShort = new DesktopIcon(this, 250, 110, new FileObject('test2', DEFAULT_FILETYPES.PNG, 'flowersPNG'));
+		const fleurLong = new DesktopIcon(this, 350, 110, new FileObject('nomBeaucoupTropLongMerciBeaucoup', DEFAULT_FILETYPES.PNG, 'flowersPNG'));
 
-		// Corbeille
-		const recycleBin = new FolderObject('Corbeille', DEFAULT_FILETYPES.RECYCLEBIN);
-		// @ts-ignore	- évite que VSCode rale pour rien
-		recycleBin.empty = function() {
-			this.content = [];
-		}
+		const emptyBin = new DesktopIcon(this, 50, 200, new FolderObject('poubelle vide', DEFAULT_FILETYPES.RECYCLEBIN));
+		const fullBin = new DesktopIcon(this, 150, 200, new FolderObject('poubelle pleine', DEFAULT_FILETYPES.RECYCLEBIN, [new FolderObject('jhdkqdh')]));
 
-		const files = [catJPG, duckPNG, imgPNG, folder1, recycleBin];
-
-
-		this.files = new Array();
-		this.icons = new Array();
-		for (const f of files) {
-			this.files.push(f);
-			this.icons.push(new DesktopIcon(this, 40, 100 + (files.indexOf(f) * 100 + 10), f));
-		}
-
-		console.log(this.icons);
+		// debug
+		// console.log('testDI2');
+		// console.log('icon.displayHeight :>> ', fleurShort.icon.displayHeight);
+		// console.log('icon.y :>> ', fleurShort.icon.y);
+		// console.log('testDI3');
+		// console.log('icon.displayHeight :>> ', fleurLong.icon.displayHeight);
+		// console.log('icon.y :>> ', fleurLong.icon.y);
 
 		
-		this.input.on('pointerdown', (pointer, position) => {
-      const clicked = position.find(obj => obj instanceof DesktopIcon);   // détermine dernière icône sélectionnée
-
-      for (const icon of this.icons) {
-        if (icon !== clicked || pointer.rightButtonDown()) icon.setSelected(false);
-        if (icon === clicked && this.checkDoubleClick()) {
-          console.log(icon.name, 'opened');
-          icon.setSelected(false);
-        }
-      }
-    });
-
-		this.input.on('dragstart', (pointer, desktopIcon) => { this.children.bringToTop(desktopIcon); });
-
-    this.input.on('dragend', (pointer, gameObject) => {
-			for (const icon of this.icons) {
-				if (icon === gameObject) continue;		// skip self
-				const targetBounds = icon.getBounds();
-				const draggedBounds = gameObject.getBounds();
-				const isOverTarget = Phaser.Geom.Intersects.RectangleToRectangle(draggedBounds, targetBounds);
-
-				if (isOverTarget && icon.file instanceof FolderObject) {
-					console.log(`${gameObject.file.name} dropped on ${icon.file.name}`);
-					icon.file.add(gameObject.file);		// AJOUTER RETURN POUR ADDCOPY
-					icon.setEmptyFolder(false);
-					this.icons.splice(this.icons.indexOf(gameObject), 1);
-					this.children.remove(gameObject);
-
-					// debug
-					console.log(this.icons);
-					console.log(icon.file.content);
-				}
-			}
 
 
 
-			// const folderIcon = position.find(obj => obj instanceof FolderObject);
-			// console.log(folderIcon);
-			// const folderBounds = folderIcon.getBounds();
-			// const isOverFolder = Phaser.Geom.Rectangle.Contains(folderBounds, pointer.x, pointer.y);
 
-			// if (isOverFolder && !(desktopIcon.file instanceof FolderObject)) {
-			// 	folderIcon.file.add(desktopIcon.file);
-			// 	folderIcon.setEmptyFolder(false);
-			// 	this.children.remove(desktopIcon);
-			// }
 
-			// PREVIOUS VERSION WITH this.recycleBinIcon
-      // const recycleBinBounds = this.recycleBinIcon.getBounds();
-      // const isOverRecycleBin = Phaser.Geom.Rectangle.Contains(recycleBinBounds, pointer.x, pointer.y);
-      // if (isOverRecycleBin && desktopIcon !== this.recycleBinIcon) {
-      //   this.recycleBinIcon.setEmptyFolder(false);
-      //   this.children.remove(desktopIcon);
-      // }
-    })
 
+
+
+
+
+		/////	 TEST DIALOG	/////
+		/*
+		const dialog = new DialogWindow(
+			this,
+			this.scale.width /2,
+			this.scale.height /2,
+			500,
+			`Lorem ipsum dolor sit amet.`,
+			false,
+			[
+				{ label: 'Btn 1', callback: () => {} },
+				{ label: 'Btn 2', callback: () => {} },
+				{ label: 'Btn 3', callback: () => {} },
+			]
+		);
+
+		dialog.background.width = 700;
+
+		this.children.remove(dialog);
+		this.add.existing(dialog);
+		*/
+
+		/////	 DEV TEST DISPLAY	/////
+    this.testInfos = this.add.text(20, 20, 'Modified version');
 	}
 
 	update() {
-			
 	}
 
 	/////   CUSTOM   /////
