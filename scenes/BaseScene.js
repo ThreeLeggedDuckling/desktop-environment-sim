@@ -14,16 +14,18 @@ export class BaseScene extends Phaser.Scene {
     // Icons assets
     this.load.image('binEmpty', 'assets/icons/recyclebin_empty.png');
 		this.load.image('binFull', 'assets/icons/recyclebin_full.png');
-		this.load.image('catG', 'assets/icons/pixelCatGrey.png');
-		this.load.image('catO', 'assets/icons/pixelCatOrange.png');
-		this.load.image('ducky', 'assets/icons/pixelDuck.png');
 		this.load.image('folder', 'assets/icons/folder.png');
 		this.load.image('picture', 'assets/icons/picture.png');
+    
+    // Placeholder icons
+		this.load.image('pixelCatG', 'assets/placeholders/pixelCatGrey.png');
+		this.load.image('pixelCatO', 'assets/placeholders/pixelCatOrange.png');
+		this.load.image('pixelDuck', 'assets/placeholders/pixelDuck.png');
 
-    // Misc assets
-		this.load.image('astronautJPG', 'assets/misc/astronaut.jpg');
-		this.load.image('chickenJPG', 'assets/misc/chicken.jpg');
-		this.load.image('flowersPNG', 'assets/misc/flowers.png');
+    // Picture files assets
+		this.load.image('astronautJPG', 'assets/pictures/astronaut.jpg');
+		this.load.image('chickenJPG', 'assets/pictures/chicken.jpg');
+		this.load.image('flowersPNG', 'assets/pictures/flowers.png');
   }
   
   create() {
