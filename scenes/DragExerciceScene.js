@@ -1,64 +1,59 @@
 import { BaseScene } from './BaseScene.js';
-import { DesktopIcon } from '../classes/DesktopIcon.js';
+import { DesktopIcon } from '../classes/Icons.js';
 
 export class DragExerciceScene extends BaseScene {
   constructor() {
     super({ key: 'DragExerciceScene' });
   }
 
-  preload() {   // assests à pré-charger
-    this.load.image('ducky', 'assets/ducky.png');
-  }
+  preload() {
+		super.preload();
+    this.load.image('ducky', 'assets/misc/ducky.png');
+	}
 
   create() {
-    super.create();   // création BaseScene
+    super.create();
 
+    // Create instructions display
     this.instructions = this.add.text(this.scale.width / 2, 100, 'Déplacer le canard dans le cadre', { fontStyle: 'bold', fontSize: '40px' }).setOrigin(0.5);
     
+    // Create zone and initial graphics
     this.rightZone = new Phaser.Geom.Rectangle(this.scale.width / 3 * 2, this.scale.height / 3, 400, 600);
     const graphics = this.add.graphics({ lineStyle: { width: 5, color: 0xcd0099 } })
     graphics.strokeRectShape(this.rightZone);
     
-    this.duck = new DesktopIcon(this, 300, 300, 'ducky', 'canard.png');
-    this.add.existing(this.duck)
+    // Create duck
+    this.duck = this.add.image(250, 500, 'ducky').setOrigin(0, 0).setInteractive({ draggable: true });
 
-    this.input.on('pointerdown', (pointer, position) => {
-      let lastclick = position.find(obj => obj instanceof DesktopIcon);
-      if (lastclick !== this.duck) this.duck.setSelected(false);
-    })
+    // Set hover behavior
+    this.duck.on('pointerover', (pointer) => { if (!pointer.isDown) this.duck.setAlpha(0.8); });
+    this.duck.on('pointerout', () => { this.duck.setAlpha(1); });
 
-    this.duck.on('dragend', (pointer) => {
-      this.duckBounds = this.duck.getBounds();
-      this.duckInZone = this.rightZone.contains(this.duckBounds.left, this.duckBounds.top) && this.rightZone.contains(this.duckBounds.right, this.duckBounds.bottom);
+    // Set drag behavior
+    this.duck.on('drag', (pointer, dragX, dragY) => { this.duck.setPosition(dragX, dragY); })
+    this.duck.on('dragstart', () => { this.duck.setAlpha(1); })
+    this.duck.on('dragend', () => {
+      // Reset alpha as hover value
+      this.duck.setAlpha(0.8);
 
-      graphics.clear();
-      if (this.duckInZone) {
+      // Check if dick fully in the zone
+      const duckBounds = this.duck.getBounds();
+      const duckInZone = this.rightZone.contains(duckBounds.left, duckBounds.top) && this.rightZone.contains(duckBounds.right, duckBounds.bottom);
+
+      if (duckInZone) {
+        // Adjust zone graphics if duck is fully inside
+        graphics.clear();
         graphics.lineStyle(5, 0x9dec6c);
+        // Add success message
         this.add.text(this.scale.width / 2, 150, 'BRAVO', { fontStyle: 'bold', fontSize: '40px', color: '#9dec6c' }).setOrigin(0.5);
-        this.duck.removeInteractive();
+        // Remove duck interactivity
+        this.duck.setAlpha(1).removeInteractive();
+        graphics.strokeRectShape(this.rightZone);
       }
-      else graphics.lineStyle(5, 0xcd0099);
-      graphics.strokeRectShape(this.rightZone);
     })
-
-    
-    
-    // DEV TEST DISPLAY
-    this.testInfos = this.add.text(20, 20, '');
-    this.duckBounds = this.duck.getBounds();
   }
 
-  // DEV TEST DATA
-  testInfos;
-
   update() {
-    // DEV TEST DATA
-    this.testInfos.setText([
-      'TEST DATA',
-      `duck.topLeft in zone : ${this.rightZone.contains(this.duckBounds.left, this.duckBounds.top)}`,
-      `duck.bottomRight in zone : ${this.rightZone.contains(this.duckBounds.right, this.duckBounds.bottom)}`,
-      `duck in zone : ${this.duckInZone}`,
-    ]);
   }
 
 }
