@@ -1,21 +1,18 @@
-/**
- * Base scene implementing needed functions for other scenes :
- * - preaload()
- * - setupFullscreenToggle()
- * - returnToMenu()
- * - checkDoubleClick()
- */
 export class BaseScene extends Phaser.Scene {
+  /**
+   * Base scene implementing needed functions for other scenes : preaload(), setupFullscreenToggle(), returnToMenu(), checkDoubleClick().
+   */
   constructor(key) {
     super(key);
   }
 
   preload() {
     // Icons assets
-    this.load.image('binEmpty', 'assets/icons/recyclebin_empty.png');
-		this.load.image('binFull', 'assets/icons/recyclebin_full.png');
+    this.load.image('binEmpty', 'assets/icons/win_recyclebin_empty.png');
+		this.load.image('binFull', 'assets/icons/win_recyclebin_full.png');
 		this.load.image('folder', 'assets/icons/folder.png');
 		this.load.image('picture', 'assets/icons/picture.png');
+		this.load.image('winMenu', 'assets/icons/win_menu.png');
     
     // Placeholder icons
 		this.load.image('pixelCatG', 'assets/placeholders/pixelCatGrey.png');
@@ -31,6 +28,7 @@ export class BaseScene extends Phaser.Scene {
   create() {
     // Store click occurence used in checkDoubleClick()
     this.firstClickTime = 0;
+    
     // Disable browser right click behavior
     this.input.mouse.disableContextMenu();
     // Allow fullscreen toggle

@@ -1,5 +1,5 @@
 import { BaseScene } from './BaseScene.js';
-import { SceneSelectionButton } from '../classes/SceneSelectionButton.js';
+import { SceneSelectionButton } from '../gameObjects/SceneSelectionButton.js';
 
 export class MenuScene extends BaseScene {
   constructor() {

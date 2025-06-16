@@ -1,5 +1,5 @@
 import { BaseScene } from './BaseScene.js';
-import { DesktopIcon } from '../classes/Icons.js';
+import { DesktopIcon } from '../gameObjects/Icons.js';
 
 export class DragExerciceScene extends BaseScene {
   constructor() {

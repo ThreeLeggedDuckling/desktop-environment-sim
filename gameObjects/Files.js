@@ -19,6 +19,7 @@ export const DEFAULT_FILETYPES = {
 	'PDF' : new FileType('pdf', '.pdf', 'pdf'),
 	'PNG' : new FileType('image', '.png', 'picture'),
 	'RECYCLEBIN' : new FileType('folder', '', ['binEmpty', 'binFull']),
+	'SYSTEM' : new FileType('system', '', 'system'),
 	'WRITER' : new FileType('text', '.doc', 'docWriter'),
 }
 
@@ -35,6 +36,10 @@ export class FileObject {
 		this.content = content;
 	}
 
+	/**
+	 * Set the name
+	 * @param {string} name
+	 */
 	rename(name) {
 		this.name = name;
 	}
@@ -43,6 +48,7 @@ export class FileObject {
 
 export class FolderObject extends FileObject {
 	/**
+	 * 
 	 * @param {string} name - Name of the folder
 	 * @param {FileType} folderType - Type folder
 	 * @param {Array<FileObject>} content - Files and subfolders of the folder
@@ -93,4 +99,17 @@ export class FolderObject extends FileObject {
 		if (index > -1) this.content.splice(index, 1);
 	}
 
+}
+
+export class SystemObject extends FileObject {
+	/**
+	 * 
+	 * @param {string} name - Name of the element
+	 * @param {string} texture - Texture to use for this element
+	 * @param {object} content - Content of the element
+	 */
+	constructor(name, texture, content) {
+		super(name, DEFAULT_FILETYPES.SYSTEM, content);
+		this.texture = texture;
+	}
 }
