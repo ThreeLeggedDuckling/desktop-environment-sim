@@ -1,9 +1,8 @@
 import { BaseScene } from './BaseScene.js';
-import { DesktopIcon } from '../gameObjects/Icons.js';
 
-export class DragExerciceScene extends BaseScene {
+export class DragAndDrop extends BaseScene {
   constructor() {
-    super({ key: 'DragExerciceScene' });
+    super({ key: 'DragAndDrop' });
   }
 
   preload() {
