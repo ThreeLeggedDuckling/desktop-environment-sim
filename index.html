@@ -2,13 +2,45 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>PC Env Simulation</title>
-  <style>
-    body { margin: 0; }
-    canvas { display: block; }
-  </style>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+  <title>Mon Bureau - Simulation d'environnement</title>
 </head>
 <body>
+  <div class="infos">
+    <h1>Mon Bureau</h1>
+  
+    <div id="about">
+      <h2>A propos</h2>
+      <p>Mon Bureau est une simulation permettant aux personnes de se familiariser avec l'interface d'un bureau d'ordinateur et l'<span class="tooltip">utilisation de la souris<span class="tooltip-text">clic gauche, clic droit, double clic, glisser déposer</span></span>.</p>
+      <p>Les apprenants peuvent explorer librement les manipulations dans le mode <span class="highlight">bac à sable</span> ou s'entraîner sur des actions spécifiques dans le mode <span class="highlight">exercices</span>.</p>
+    </div>
+  </div>
+
+  <div id="canvas"></div>
+
+  <div class="infos">
+    <div>
+      <h2>Contrôles</h2>
+      <ul>
+        <li>Passer le jeu en plein écran : touche <span class="input-tip">ESPACE</span></li>
+        <li>Quitter le plein écran : touche <span class="input-tip">ECHAP</span></li>
+        <li>Sélectionner un mode de jeu : <span class="input-tip">CLIC GAUCHE</span> ou touche du pavé numérique correspondante</li>
+      </ul>
+    </div>
+  
+    <div id="credits">
+      <h2>Crédits</h2>
+      <ul>
+        <li>Image de fond d'écran : photo de <a target="_blank" href="https://www.pexels.com/fr-fr/photo/centrale-plante-vert-feuilles-de-palmier-7718152/">Marina Leonova</a></li>
+      </ul>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.min.js"></script>
   <script type="module" src="main.js"></script>
 </body>

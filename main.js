@@ -1,23 +1,26 @@
 /// <reference path="node_modules/phaser/types/phaser.d.ts" />
 
-import { MenuScene } from './scenes/MenuScene.js'
+import { MainMenu, ExercicesMenu } from './scenes/MenuScenes.js'
 import { DesktopScene } from './scenes/DesktopScene.js'
-import { DragExerciceScene } from './scenes/DragExerciceScene.js'
+import { DragAndDrop } from './scenes/DragAndDrop.js'
+import { DoubleClick } from './scenes/DoubleClick.js'
 import { TestScene } from './scenes/TestScene.js'
+import { BaseScene } from './scenes/BaseScene.js';
 
 let config = {
   type: Phaser.AUTO,
+  parent: 'canvas',
   scale: {
     mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
+    autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
     width: 1920,
     height: 1080,
   },
-  scene: [TestScene]
-  // scene: [MenuScene, DesktopScene, DragExerciceScene]
-  // scene: [MenuScene, DesktopScene, DragExerciceScene, TestScene]
-  // scene: [DesktopScene]
-  // scene: [DragExerciceScene]
+  // ALL SCENES
+  // scene: [MainMenu, ExercicesMenu, DesktopScene, DragAndDrop, DoubleClick]
+  // scene: [TestScene]  // TEST
+  scene: [DesktopScene]  // SANDBOX
+  // scene: [DoubleClick]   // EXERCICE
 }
 
 const game = new Phaser.Game(config);

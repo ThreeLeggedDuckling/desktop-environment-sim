@@ -1,0 +1,61 @@
+body {
+	margin: 0;
+	font-family: 'Roboto';
+}
+
+a {
+	color: #000;
+}
+
+h1 {
+	text-align: center;
+	color: #7a0c7c;
+}
+
+.infos {
+	width: 80%;
+	margin: 10px auto;
+}
+
+.highlight {
+	color: #7a0c7c;
+	font-weight: 600;
+}
+
+.input-tip {
+	font-weight: 600;
+	/* color: #fff;
+	background-color: #7a0c7c;
+	padding: 0 2px; */
+}
+
+.tooltip {
+	position: relative;
+	display: inline-block;
+	border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltip-text {
+	visibility: hidden;
+	width: 120px;
+	background-color: #000000b4;
+	color: #fff;
+	text-align: center;
+	border-radius: 6px;
+	padding: 5px;
+	
+	position: absolute;
+	z-index: 1;
+	bottom: 100%;
+	left: 50%;
+	margin-left: -60px;
+}
+
+.tooltip:hover .tooltip-text {
+	visibility: visible;
+}
+
+canvas {
+	/* display: block; */
+	/* max-height: 50%; */
+}
