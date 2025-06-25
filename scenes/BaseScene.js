@@ -35,6 +35,7 @@ export class BaseScene extends Phaser.Scene {
     this.setupFullscreenToggle('SPACE', 'ESC');
     // Allow keyboard shortcut to go to main menu scene
     this.returnToMainMenu();
+    
   }
   
   /**
@@ -59,7 +60,7 @@ export class BaseScene extends Phaser.Scene {
    * @param {string} key
    */
   returnToMainMenu(key = 'BACKSPACE') {
-    this.input.keyboard?.addKey(key).on('down', () => { this.scene.start('MenuScene') })
+    this.input.keyboard?.addKey(key).on('down', () => { this.scene.start('MainMenu') })
   }
   
   /**

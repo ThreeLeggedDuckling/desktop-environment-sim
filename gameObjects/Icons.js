@@ -111,7 +111,7 @@ export class DesktopIcon extends Icon {
     this.setInteractive({ draggable: true });
 
     // Add interactions inputs
-    this.on('drag', (pointer, dragX, dragY) => { this.setPosition(dragX, dragY); })
+    this.on('drag', (pointer, dragX, dragY) => { this.setPosition(dragX, dragY); });
     this.on('pointerover', () => { this.background.setAlpha(0.2); });
     this.on('pointerout', () => { this.background.setAlpha(this.isSelected ? 0.5 : 0); });
     this.on('pointerdown', (pointer) => {
@@ -120,15 +120,15 @@ export class DesktopIcon extends Icon {
       if (pointer.rightButtonDown()) {
         let posX = pointer.x, posY = pointer.y;
 
+        // PLACEHOLDER CONTEXTE MENU
         const contextual = new ContextMenu(scene, posX, posY, [
-          new OptionObject('option 1', null, null),
-          new OptionObject('option 2', null, null),
-          new OptionObject('option 3', null, null),
+          new OptionObject('option 1', null),
+          new OptionObject('option 2', null),
+          new OptionObject('option 3', null, [ new OptionObject('a', null) ]),
         ]);
 
         scene.add.existing(contextual);
-        // MENUMANAGER.blockNewMenuDestruction(contextual, pointer.event.timeStamp);
-        MENUMANAGER.spawnRootMenu(contextual);
+        MENUMANAGER.addMenu(contextual, pointer.downTime);
       }
     })
 
@@ -176,14 +176,12 @@ export class TaskBarPin extends Icon {
     // Store if a related window is open
     this.isOpen = false;
 
-    // DEFINIR TEXTURE SUR BASE FILETYPE
     // Get texture
     let texture;
     // @ts-ignore
     if (file instanceof SystemObject) texture = file.texture;
     else texture = Array.isArray(file.fileType.texture) ? file.fileType.texture[0] : file.fileType.texture;
 
-    
     // Get scale value
     const frame = scene.textures.get(texture).getSourceImage();
     const scale = dimensions / Math.max(frame.width, frame.height);
@@ -201,9 +199,21 @@ export class TaskBarPin extends Icon {
     this.on('pointerdown', (pointer) => {
       // MODIFIER CLICK GAUCHE
       // if (pointer.leftButtonDown()) this.setSelected(true);
-    })
 
-    // AJOUTER MENU CLICK DROIT
+      if (pointer.rightButtonDown()) {
+        let posX = pointer.x, posY = pointer.y;
+
+        // PLACEHOLDER CONTEXTE MENU
+        const contextual = new ContextMenu(scene, posX, posY, [
+          new OptionObject('option 1', null),
+          new OptionObject('option 2', null),
+          new OptionObject('option 3', null, [ new OptionObject('a', null) ]),
+        ]);
+
+        scene.add.existing(contextual);
+        MENUMANAGER.addMenu(contextual, pointer.downTime);
+      }
+    })
 
     // Drag behavior managed inside TaskBar
 

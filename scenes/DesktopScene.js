@@ -3,7 +3,7 @@ import { BaseScene } from "./BaseScene.js";
 import { initMenuManger } from "../handlers/MenuManager.js";
 
 import { ContextMenu, OptionObject } from "../gameObjects/ContextMenu.js";
-import { DialogWindow } from "../gameObjects/DialogWindow.js";
+import { DialogWindow } from "../gameObjects/Windows.js";
 import { DEFAULT_FILETYPES, FileObject, FileType, FolderObject,  } from "../gameObjects/Files.js";
 import { DesktopIcon, Icon } from "../gameObjects/Icons.js";
 import { TaskBar } from "../gameObjects/TaskBar.js";
@@ -15,15 +15,23 @@ export class DesktopScene extends BaseScene {
 
   preload() {
 		super.preload();
+    this.load.image('desktopBg', 'assets/pictures/leafs.jpg');
 	}
 
   create() {
     super.create();
     initMenuManger(this);
 
+    // Add desktop background
+    const desktopBackground = this.add.image(0,0,'desktopBg').setOrigin(0);
+
+    // Store original position of dragged elements
+    let startPosition;
+
     // The scene's file and Icon objects
     this.files = new Array();
     this.icons = new Array();
+
 
     // PLACEHOLDER CONTEXTMENU
     let contextMenu;
@@ -57,6 +65,7 @@ export class DesktopScene extends BaseScene {
         // If the icon left-clicked on isn't the previously selected one or if the last click is the mouse right button
         // set the icon isSelected property to false
         if (icon !== previouslyClicked || pointer.rightButtonDown()) icon.setSelected(false);
+
         // If the icon left-clicked is the previously selected one and constitute a double click
         // open the corresponding "window" and set the icon isSelected property to false
         if (icon === previouslyClicked && this.checkDoubleClick()) {
@@ -69,60 +78,76 @@ export class DesktopScene extends BaseScene {
       // On right button click, open the pointer's target context menu
       if (pointer.rightButtonDown()) {
         // ICI IMPLEMENTER MENU CONTEXTUEL
-        contextMenu = new Phaser.GameObjects.Text(this, pointer.x, pointer.y, 'contextMenu', { color: '#ffffff' });
-        this.add.existing(contextMenu);
       }
 
     });
 
-    // When beginning drag on dragable element, bring the element to the forefront
-    this.input.on('dragstart', (pointer, desktopIcon) => { this.children.bringToTop(desktopIcon); });
+    // When beginning drag on dragable element, 
+    this.input.on('dragstart', (pointer, gameObject) => {
+      //debug
+      console.log('________');
+      console.log('last sp record', startPosition);
+
+      // Store original position
+      startPosition = { x: gameObject.x, y: gameObject.y };
+
+      //debug
+      console.log('new sp record', startPosition);
+      
+      // Bringdragged element to the forefront
+      this.children.bringToTop(gameObject);
+    });
 
     // When ending drag on dragable element
     this.input.on('dragend', (pointer, gameObject) => {
-      // If ending on an icon
+      // Check if drag ends with pointer over an other icon
       for (const icon of this.icons) {
 				// Skip self
 				if (icon === gameObject) continue;
 
-        // Get the ending target bounds
+        // Check if pointer inside icon bounds
 				const targetBounds = icon.getBounds();
-        // A MODIFIER   <- pointer comme ref pas draggedBounds
-				const draggedBounds = gameObject.getBounds();
-				const isOverTarget = Phaser.Geom.Intersects.RectangleToRectangle(draggedBounds, targetBounds);
+        const isOverTarget = Phaser.Geom.Rectangle.Contains(targetBounds, pointer.x, pointer.y);
 
-        // If the ending target is an icon for a FolderObject
-				if (isOverTarget && icon.file instanceof FolderObject) {
-					console.log(`${gameObject.file.name} dropped on ${icon.file.name}`);  // debug
+        if (isOverTarget) {
+          // If the icon is for a folder and not the recycle bin
+          if (icon.file instanceof FolderObject && gameObject.file.fileType !== DEFAULT_FILETYPES.RECYCLEBIN) {
+            // Try adding the file to the folder's content
+            let fileAdded = icon.file.add(gameObject.file);
 
-          // Try adding the file to the folder's content
-					let fileAdded = icon.file.add(gameObject.file);
-          // If it succeeds, update the icon's active texture and remove the icon from the scene
-					if (fileAdded) {
-            icon.setEmptyFolder(false);
-            this.icons.splice(this.icons.indexOf(gameObject), 1);
-            this.children.remove(gameObject);
+            // If it succeeds, update the icon's active texture and remove the icon from the scene
+            if (fileAdded) {
+              icon.setEmptyFolder(false);
+              this.icons.splice(this.icons.indexOf(gameObject), 1);
+              this.children.remove(gameObject);
+            }
+
+            // Else spawn dialog window with action choices
+            else {
+              // PLACEHOLDER CHOIX
+              const dialog = new DialogWindow(
+                this,
+                this.scale.width /2,
+                this.scale.height /2,
+                500,  // A MODIFIER
+                `La destination comprend déjà un fichier nommé « ${gameObject.file.name}${gameObject.file.fileType.extension} ».`,
+                true,
+                [
+                  { label: 'Remplacer', callback: () => {} },
+                  { label: 'Ignorer', callback: () => {} },
+                  { label: 'Comparer', callback: () => {} },
+                ]
+              );
+            }
           }
-					else {
-            // PLACEHOLDER CHOIX
-            const dialog = new DialogWindow(
-              this,
-              this.scale.width /2,
-              this.scale.height /2,
-              500,  // A MODIFIER
-              `La destination comprend déjà un fichier nommé « ${gameObject.file.name}${gameObject.file.fileType.extension} ».`,
-              true,
-              [
-                { label: 'Remplacer', callback: () => {} },
-                { label: 'Ignorer', callback: () => {} },
-                { label: 'Comparer', callback: () => {} },
-              ]
-            );
-					}
 
-					console.log(this.icons);  // debug
-					console.log(icon.file.content); // debug
-				}
+          // If dragged object still on display, reset its position to before the drag
+          // @ts-ignore
+          console.log('children includes dragged', this.children.list.includes(gameObject));
+          // @ts-ignore
+          if (this.children.list.includes(gameObject)) gameObject.setPosition(startPosition.x, startPosition.y);
+        }
+
 			}
     })
 
@@ -138,7 +163,7 @@ export class DesktopScene extends BaseScene {
   update() {
     // DEV : test data display
     this.testInfos.setText([
-      'TEST DATA',
+      // 'TEST DATA',
     ]);
   }
 }

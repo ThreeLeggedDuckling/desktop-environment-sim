@@ -3,6 +3,7 @@ import { MENUMANAGER } from "../handlers/MenuManager.js";
 import { ContextMenu, OptionObject } from "./ContextMenu.js";
 import { DEFAULT_FILETYPES, FileObject, FolderObject, SystemObject } from "./Files.js";
 import { TaskBarPin } from "./Icons.js";
+import { DialogWindow } from "../gameObjects/Windows.js";
 
 export class TaskBar extends Phaser.GameObjects.Container {
   /**
@@ -22,7 +23,7 @@ export class TaskBar extends Phaser.GameObjects.Container {
     taskPins.unshift(new SystemObject('Démarrer', 'winMenu', ['option 1', 'option 2', 'option 3']));
     
     // Create background component
-    this.background = scene.add.rectangle(0, 0, scene.scale.width, 50, 0xffffff, 0.8)
+    this.background = scene.add.rectangle(0, 0, scene.scale.width, 50, 0xffffff, 0.9)
     this.add(this.background);
 
     // Create task pins container
@@ -82,36 +83,52 @@ export class TaskBar extends Phaser.GameObjects.Container {
     this.setInteractive();
 
     this.on('pointerdown', (pointer) => {
-      if (pointer.rightButtonDown()) {
-        // MENUMANAGER.blockNextPointerDown(pointer.event.timeStamp);
-        
-        // console.log(object);
-        let posX = pointer.x, posY = pointer.y;
-        
-        // alert('yay');
-        const contextual = new ContextMenu(scene, posX, posY, [
-          new OptionObject('test', null, null),
-          new OptionObject('voilà', null, null),
-          new OptionObject('ok', null, null),
-        ]);
-        posY= this.y - this.height / 2 - contextual.background.height;
-        contextual.setPosition(posX, posY);
-        
-        //debug
-        console.log('TASKBAR EVENT');
-        // console.log('> menuManager.has(menu)', MENUMANAGER.openMenus.has(contextual));
-
-        scene.add.existing(contextual);
-        // MENUMANAGER.blockNewMenuDestruction(contextual, pointer.event.timeStamp);
-        MENUMANAGER.spawnRootMenu(contextual);
-        
-        // console.log('TEST NEW MENU');
-        // if (scene.children.list.filter(elem => elem instanceof ContextMenu)) console.log('> success');
-      }
+      if (pointer.rightButtonDown()) this.spawnMenu(pointer);
     })
 
     // Add taskbar to scene
     scene.add.existing(this);
+  }
+
+  spawnMenu(pointer) {
+    let posX = pointer.x, posY = pointer.y;
+
+    const contextual = new ContextMenu(this.scene, posX, posY, [
+      new OptionObject('test', () => {
+        const dialog = new DialogWindow(
+              this.scene,
+              this.scene.scale.width /2,
+              this.scene.scale.height /2,
+              500,
+              [
+                'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras tellus libero, maximus in maximus at, molestie sed ligula.',
+                'Donec nec turpis placerat, mollis tellus vel, dignissim tellus.'
+              ],
+              false,
+              [
+                { label: 'Btn 1', callback: () => {} },
+                { label: 'Btn 2', callback: () => {} },
+                { label: 'Btn 3', callback: () => {} },
+              ]
+            );
+      }, null),
+      new OptionObject('voilà', null, [
+        new OptionObject('sous option 1', null, null),
+        new OptionObject('sous option 2', null, null),
+      ]),
+      new OptionObject('ok', null, null),
+    ]);
+    
+    // Update menu position to be above taskbar
+    let newPosY = this.y - this.height / 2 - contextual.background.height;
+    contextual.setPosition(posX, newPosY);
+
+    
+    //debug
+    console.log('TASKBAR EVENT');
+
+    this.scene.add.existing(contextual);
+    MENUMANAGER.addMenu(contextual, pointer.downTime);
   }
 
 }

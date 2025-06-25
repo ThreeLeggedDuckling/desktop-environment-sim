@@ -30,7 +30,7 @@ export class OptionContainer extends Phaser.GameObjects.Container {
     this.subMenu = null;
 
     // Create components
-    this.label = scene.add.text(0, 0, option.label).setPadding(10).setOrigin(0, 0);
+    this.label = scene.add.text(0, 0, option.label, { color: '#000' }).setPadding(10).setOrigin(0, 0);
     this.background = scene.add.rectangle(0, 0, 100, this.label.height, 0x9dec6c).setAlpha(0).setOrigin(0, 0);
     this.add([this.label, this.background]);
   }
@@ -45,9 +45,15 @@ export class OptionContainer extends Phaser.GameObjects.Container {
     
     // If there is, setup sub-options menu
     if (this.option.subOptions) {
+      //debug
+      console.log('... create submenu ...');
+
       const bounds = this.getBounds();
-      this.subMenu = new ContextMenu(this.scene, bounds.right, bounds.top, this.option.subOptions, this.parentMenu || this.parentContainer).setVisible(false);
-      // this.subMenu = new ContextMenu(this.scene, width, 0, this.option.subOptions, this).setVisible(false);
+      this.subMenu = new ContextMenu(this.scene, bounds.right, bounds.top, this.option.subOptions, this.parentMenu).setVisible(false);
+      // this.subMenu = new ContextMenu(this.scene, bounds.right, bounds.top, this.option.subOptions, this.parentMenu);
+      //debug
+      console.log('> submenu', this.subMenu);
+
       this.scene.add.existing(this.subMenu);
     }
   }
@@ -70,20 +76,11 @@ export class OptionContainer extends Phaser.GameObjects.Container {
       this.option.callback?.();
       
       let menu = this.parentMenu;
-      // let menubefore = this.parentMenu;
-
-      // console.log('menu before');
-      // console.log(menu);
-
       while (menu?.parentMenu) {
         menu = menu.parentMenu;
       }
 
-      // console.log('menu after');
-      // console.log(menu);
-      // console.log('before = after', menubefore === menu);
-      // console.log('menu is menu', menu instanceof ContextMenu);
-
+      //debug
       console.log('MOVE TO PARENT DESTROY');
       menu.destroyMenuChain();
     })
@@ -97,6 +94,7 @@ export class ContextMenu extends Phaser.GameObjects.Container {
    * @param {number} x - Horizontal position within the scene
    * @param {number} y - Vertical position within the scene
    * @param {Array<OptionObject>} options - Array containing the menu's options
+   * @param {ContextMenu} parentMenu - This parent menu if is a submenu, else null
    */
   constructor(scene, x, y, options, parentMenu = null) {
     super(scene, x, y);
@@ -124,35 +122,33 @@ export class ContextMenu extends Phaser.GameObjects.Container {
       maxOptHeight = Math.max(maxOptHeight, option.label.height);
     }
 
-    // Add interactivity to options
     for (const opt of optionContainers) {
+      // Add option to the menu tree
       opt.parentMenu = this;
+      
+      if (opt.option.subOptions) console.log('opt.option.subOptions', opt.option.subOptions);
+      if (opt.option.subOptions) console.log('opt.subMenu', opt.subMenu);
+      // if (opt.option.subOptions) opt.parentMenu.childrenMenus.push();
+      
+      // Add interactivity
       opt.setupInteractive(maxOptWidth, maxOptHeight);
     }
 
-    this.background = scene.add.rectangle(0, 0, maxOptWidth, lastY + lastHeight, 0xffffff).setAlpha(0.3).setOrigin(0, 0);
+    this.background = scene.add.rectangle(0, 0, maxOptWidth, lastY + lastHeight, 0xffffff).setAlpha(0.8).setOrigin(0, 0);
     this.addAt(this.background);
-
-    // Add to MenuManager
-    // MENUMANAGER.register(this);
 
     // Add context menu to the scene
     scene.add.existing(this);
   }
 
   destroyMenuChain() {
+    //debug
     console.log('destroyMenuChain');
+
     for (const elem of this.list) {
       if (elem instanceof OptionContainer && elem.subMenu) elem.subMenu.destroyMenuChain();
     }
-    
-    // MENUMANAGER.unregister(this);
     this.destroy();
   }
-
-  getMenuChain() {
-    // @ts-ignore
-		return [this, ...this.childrenMenus.flatMap(m => m.getMenuChain())];
-	}
 
 }
