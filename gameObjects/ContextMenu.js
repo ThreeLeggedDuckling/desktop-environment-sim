@@ -1,9 +1,8 @@
 import { HOVERMANAGER } from "../handlers/HoverManager.js";
-import { MenuManager, MENUMANAGER } from "../handlers/MenuManager.js"
 
 export class OptionObject {
   /**
-   * Object representation of a menu's option
+   * Object representation of a menu's option.
    * @param {string} label - Label of the option
    * @param {Function | null} callback - Callback triggered by clicking the option, nullable if the option has sub-options
    * @param {Array<OptionObject> | null} subOptions - Arrays of sub-options linked to the option. Default null.
@@ -17,7 +16,7 @@ export class OptionObject {
 
 export class OptionContainer extends Phaser.GameObjects.Container {
   /**
-   * 
+   * Container object of a menu option.
    * @param {Phaser.Scene} scene - Parent scene
    * @param {number} x - Horizontal position within the scene
    * @param {number} y - Vertical position within the scene
@@ -35,7 +34,12 @@ export class OptionContainer extends Phaser.GameObjects.Container {
     this.add([this.label, this.background]);
   }
 
-  setupInteractive(width, height) {
+  /**
+   * Adjust container dimensions for interactivity and spawn submenu.
+   * @param {number} width - Container width
+   * @param {number} height - Container height
+   */
+  setupContainer(width, height) {
     // Resize background
     this.background.setDisplaySize(width, height);
       
@@ -45,19 +49,16 @@ export class OptionContainer extends Phaser.GameObjects.Container {
     
     // If there is, setup sub-options menu
     if (this.option.subOptions) {
-      //debug
-      console.log('... create submenu ...');
-
       const bounds = this.getBounds();
       this.subMenu = new ContextMenu(this.scene, bounds.right, bounds.top, this.option.subOptions, this.parentMenu).setVisible(false);
-      // this.subMenu = new ContextMenu(this.scene, bounds.right, bounds.top, this.option.subOptions, this.parentMenu);
-      //debug
-      console.log('> submenu', this.subMenu);
 
       this.scene.add.existing(this.subMenu);
     }
   }
 
+  /**
+   * Add listeners and behavior to the container.
+   */
   addInteractions() {
     this.on('pointerover', () => {
       this.background.setAlpha(0.5);
@@ -73,15 +74,15 @@ export class OptionContainer extends Phaser.GameObjects.Container {
     });
 
     this.on('pointerdown', () => {
+      // Execute option callback
       this.option.callback?.();
       
+      // Get menu root
       let menu = this.parentMenu;
       while (menu?.parentMenu) {
         menu = menu.parentMenu;
       }
-
-      //debug
-      console.log('MOVE TO PARENT DESTROY');
+      
       menu.destroyMenuChain();
     })
   }
@@ -89,7 +90,7 @@ export class OptionContainer extends Phaser.GameObjects.Container {
 
 export class ContextMenu extends Phaser.GameObjects.Container {
   /**
-   * 
+   * Container object of a contextual menu.
    * @param {Phaser.Scene} scene - Parent scene
    * @param {number} x - Horizontal position within the scene
    * @param {number} y - Vertical position within the scene
@@ -126,7 +127,7 @@ export class ContextMenu extends Phaser.GameObjects.Container {
       // Add option to the menu tree
       opt.parentMenu = this;
       // Add interactivity
-      opt.setupInteractive(maxOptWidth, maxOptHeight);
+      opt.setupContainer(maxOptWidth, maxOptHeight);
     }
 
     this.background = scene.add.rectangle(0, 0, maxOptWidth, lastY + lastHeight, 0xffffff).setAlpha(0.8).setOrigin(0, 0);
@@ -140,7 +141,7 @@ export class ContextMenu extends Phaser.GameObjects.Container {
   }
 
   /**
-   * Adjust the menu position if there not enough space to fit it fully inside the scene
+   * Adjust the menu position if there not enough space to fit it fully inside the scene, or to hardest values.
    * @param {number} x - Hardset horizontal position
    * @param {number} y - Hardset vertical position
    */
@@ -152,48 +153,33 @@ export class ContextMenu extends Phaser.GameObjects.Container {
     // Get updated x and y
     let newPosX = this.x, newPosY = this.y;
     if (!x && rightLimit > this.scene.scale.width) newPosX -= this.background.width + (this.parentMenu ? this.parentMenu.background.width : 0);
-    // REPARER DECALAGE QUAND PLUSIEURS OPTIONS
-    if (!y && bottomLimit > this.scene.scale.height) newPosY -= this.background.height;
+    if (!y && bottomLimit > this.scene.scale.height) newPosY -= this.background.height; // REPARER DECALAGE QUAND PLUSIEURS OPTIONS
 
     // Get difference between original and updated position
     const transX = x ? x - this.x : newPosX - this.x;
     const transY = y ? y - this.y : newPosY - this.y;
 
-    //debug
-    console.log('_____');
-    console.log('parent hardset', { x: x, y: y });
-    console.log('parent ogPos', { x: this.x, y: this.y });
-    console.log('parent translate values', { x: transX, y: transY});
-
-    // Adjust position
+    // Adjust self and submenus positions
     this.setPosition(x ?? newPosX, y ?? newPosY);
-
-    // Adjust submenus position
     if (this.childrenMenus.length) this.adjustChildrenPosition(transX, transY);
   }
 
   /**
-   * Adjust submenus position
+   * Adjust submenus position according to parent new position.
    * @param {number} transX - Horizontal translation
    * @param {number} transY - Vertical translation
    */
   adjustChildrenPosition(transX, transY) {
     for (const child of this.childrenMenus) {
-      //debug
-      const ogPos = { x: child.x, y: child.y };
-      const upPos = { x: child.x + transX, y: child.y + transY};
-      console.log('child ogPos', ogPos);
-      console.log('child upPos', upPos);
-
       child.setPosition(child.x + transX, child.y + transY);
       child.adjustSelfPosition();
     }
   }
 
+  /**
+   * Destroy self and all its submenus.
+   */
   destroyMenuChain() {
-    //debug
-    console.log('destroyMenuChain');
-
     for (const elem of this.list) {
       if (elem instanceof OptionContainer && elem.subMenu) elem.subMenu.destroyMenuChain();
     }

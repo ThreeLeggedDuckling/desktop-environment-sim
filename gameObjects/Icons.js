@@ -5,7 +5,7 @@ import { DEFAULT_FILETYPES, FileObject, FolderObject, SystemObject } from "./Fil
 
 export class Icon extends Phaser.GameObjects.Container {
   /**
-   * 
+   * Container object of an icon.
    * @param {Phaser.Scene} scene - Parent scene containing the icon
    * @param {number} x - Horizontal position within the scene
    * @param {number} y - Vertical position within the scene
@@ -56,7 +56,7 @@ export class Icon extends Phaser.GameObjects.Container {
 
 export class DesktopIcon extends Icon {
   /**
-   * 
+   * Container object of a desktop icon.
    * @param {Phaser.Scene} scene - Parent scene containing the icon
    * @param {number} x - Horizontal position within the scene
    * @param {number} y - Vertical position within the scene

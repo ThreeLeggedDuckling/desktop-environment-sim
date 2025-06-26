@@ -7,7 +7,7 @@ import { DialogWindow } from "../gameObjects/Windows.js";
 
 export class TaskBar extends Phaser.GameObjects.Container {
   /**
-   * 
+   * Container object of a taskbar.
    * @param {Phaser.Scene} scene - Parent scene containing the taskbar
    * @param {Array<FileObject>} taskPins - Array of elemnts pinned to the taskbar
    * @param {boolean} centered - Define the alignement of the pins within the taskbar
@@ -90,6 +90,10 @@ export class TaskBar extends Phaser.GameObjects.Container {
     scene.add.existing(this);
   }
 
+  /**
+   * Spawn taskbar's contextual menu.
+   * @param {Phaser.Input.Pointer} pointer - Pointer input, used for positionning
+   */
   spawnMenu(pointer) {
     let posX = pointer.x, posY = pointer.y;
 
@@ -115,8 +119,6 @@ export class TaskBar extends Phaser.GameObjects.Container {
       new OptionObject('voilà', null, [
         new OptionObject('sous option', null, null),
         new OptionObject('sous option', null, null),
-        new OptionObject('sous option', null, null),
-        new OptionObject('sous option', null, null),
       ]),
       new OptionObject('ok', null, null),
     ]);
@@ -124,10 +126,6 @@ export class TaskBar extends Phaser.GameObjects.Container {
     // Update menu position to be above taskbar and fully visible
     const newPosY = this.y - this.height / 2 - contextual.background.height;
     contextual.adjustSelfPosition(null, newPosY);
-
-    
-    //debug
-    console.log('TASKBAR EVENT');
 
     this.scene.add.existing(contextual);
     MENUMANAGER.addMenu(contextual, pointer.downTime);
