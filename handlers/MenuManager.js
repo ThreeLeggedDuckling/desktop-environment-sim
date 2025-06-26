@@ -31,8 +31,14 @@ export class MenuManager {
 		//debug
 		console.log('MENU MANAGER');
 
+		// If right click, stop destruction of spawned menus
 		if (pointer.rightButtonDown()) this.destroyMenus(pointer.downTime);
+
+		// IMPLEMENTER CLIC SUR OPTION AVEC SOUS OPTION
+		// If left click on an option with a submenu, do nothing
 		// else if ()
+
+		// If left click anywhere else, destroy all menus
 		else this.destroyMenus();
 
 
@@ -43,7 +49,6 @@ export class MenuManager {
 	}
 
 }
-
 
 export let MENUMANAGER = null;
 

@@ -113,15 +113,17 @@ export class TaskBar extends Phaser.GameObjects.Container {
             );
       }, null),
       new OptionObject('voilà', null, [
-        new OptionObject('sous option 1', null, null),
-        new OptionObject('sous option 2', null, null),
+        new OptionObject('sous option', null, null),
+        new OptionObject('sous option', null, null),
+        new OptionObject('sous option', null, null),
+        new OptionObject('sous option', null, null),
       ]),
       new OptionObject('ok', null, null),
     ]);
     
-    // Update menu position to be above taskbar
-    let newPosY = this.y - this.height / 2 - contextual.background.height;
-    contextual.setPosition(posX, newPosY);
+    // Update menu position to be above taskbar and fully visible
+    const newPosY = this.y - this.height / 2 - contextual.background.height;
+    contextual.adjustSelfPosition(null, newPosY);
 
     
     //debug

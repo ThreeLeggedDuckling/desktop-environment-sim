@@ -117,19 +117,7 @@ export class DesktopIcon extends Icon {
     this.on('pointerdown', (pointer) => {
       if (pointer.leftButtonDown()) this.setSelected(true);
 
-      if (pointer.rightButtonDown()) {
-        let posX = pointer.x, posY = pointer.y;
-
-        // PLACEHOLDER CONTEXTE MENU
-        const contextual = new ContextMenu(scene, posX, posY, [
-          new OptionObject('option 1', null),
-          new OptionObject('option 2', null),
-          new OptionObject('option 3', null, [ new OptionObject('a', null) ]),
-        ]);
-
-        scene.add.existing(contextual);
-        MENUMANAGER.addMenu(contextual, pointer.downTime);
-      }
+      if (pointer.rightButtonDown()) this.spawnMenu(pointer);
     })
 
     // Add components to the icon container
@@ -148,6 +136,27 @@ export class DesktopIcon extends Icon {
       this.isEmptyFolder = isEmpty;
       this.updateIconTexture();
     }
+  }
+
+  spawnMenu(pointer) {
+    let posX = pointer.x, posY = pointer.y;
+
+    // PLACEHOLDER CONTEXTE MENU
+    const contextual = new ContextMenu(this.scene, posX, posY, [
+      new OptionObject('option 1', null),
+      new OptionObject('option 2', null),
+      new OptionObject('option 3', null, [
+        new OptionObject('aaaaaa', null),
+        new OptionObject('aaaaaa', null),
+        new OptionObject('aaaaaa', null),
+        new OptionObject('aaaaaa', null),
+        new OptionObject('aaaaaa', null),
+      ]),
+    ]);
+    contextual.adjustSelfPosition();
+
+    this.scene.add.existing(contextual);
+    MENUMANAGER.addMenu(contextual, pointer.downTime);
   }
 
   /**

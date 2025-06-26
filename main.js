@@ -18,8 +18,8 @@ let config = {
   },
   // ALL SCENES
   // scene: [MainMenu, ExercicesMenu, DesktopScene, DragAndDrop, DoubleClick]
-  // scene: [TestScene]  // TEST
-  scene: [DesktopScene]  // SANDBOX
+  scene: [TestScene]  // TEST
+  // scene: [DesktopScene]  // SANDBOX
   // scene: [DoubleClick]   // EXERCICE
 }
 

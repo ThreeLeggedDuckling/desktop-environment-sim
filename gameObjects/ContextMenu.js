@@ -125,11 +125,6 @@ export class ContextMenu extends Phaser.GameObjects.Container {
     for (const opt of optionContainers) {
       // Add option to the menu tree
       opt.parentMenu = this;
-      
-      if (opt.option.subOptions) console.log('opt.option.subOptions', opt.option.subOptions);
-      if (opt.option.subOptions) console.log('opt.subMenu', opt.subMenu);
-      // if (opt.option.subOptions) opt.parentMenu.childrenMenus.push();
-      
       // Add interactivity
       opt.setupInteractive(maxOptWidth, maxOptHeight);
     }
@@ -137,8 +132,62 @@ export class ContextMenu extends Phaser.GameObjects.Container {
     this.background = scene.add.rectangle(0, 0, maxOptWidth, lastY + lastHeight, 0xffffff).setAlpha(0.8).setOrigin(0, 0);
     this.addAt(this.background);
 
+    // @ts-ignore
+    if(parentMenu) parentMenu.childrenMenus.push(this);
+
     // Add context menu to the scene
     scene.add.existing(this);
+  }
+
+  /**
+   * Adjust the menu position if there not enough space to fit it fully inside the scene
+   * @param {number} x - Hardset horizontal position
+   * @param {number} y - Hardset vertical position
+   */
+  adjustSelfPosition(x = null, y = null) {
+    // Get menu dimensions
+    const rightLimit = this.x + this.background.width + 20;
+    const bottomLimit = this.y + this.background.height + 10;
+
+    // Get updated x and y
+    let newPosX = this.x, newPosY = this.y;
+    if (!x && rightLimit > this.scene.scale.width) newPosX -= this.background.width + (this.parentMenu ? this.parentMenu.background.width : 0);
+    // REPARER DECALAGE QUAND PLUSIEURS OPTIONS
+    if (!y && bottomLimit > this.scene.scale.height) newPosY -= this.background.height;
+
+    // Get difference between original and updated position
+    const transX = x ? x - this.x : newPosX - this.x;
+    const transY = y ? y - this.y : newPosY - this.y;
+
+    //debug
+    console.log('_____');
+    console.log('parent hardset', { x: x, y: y });
+    console.log('parent ogPos', { x: this.x, y: this.y });
+    console.log('parent translate values', { x: transX, y: transY});
+
+    // Adjust position
+    this.setPosition(x ?? newPosX, y ?? newPosY);
+
+    // Adjust submenus position
+    if (this.childrenMenus.length) this.adjustChildrenPosition(transX, transY);
+  }
+
+  /**
+   * Adjust submenus position
+   * @param {number} transX - Horizontal translation
+   * @param {number} transY - Vertical translation
+   */
+  adjustChildrenPosition(transX, transY) {
+    for (const child of this.childrenMenus) {
+      //debug
+      const ogPos = { x: child.x, y: child.y };
+      const upPos = { x: child.x + transX, y: child.y + transY};
+      console.log('child ogPos', ogPos);
+      console.log('child upPos', upPos);
+
+      child.setPosition(child.x + transX, child.y + transY);
+      child.adjustSelfPosition();
+    }
   }
 
   destroyMenuChain() {

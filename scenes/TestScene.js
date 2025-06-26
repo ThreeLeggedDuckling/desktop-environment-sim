@@ -29,7 +29,6 @@ export class TestScene extends BaseScene {
 			new FileObject('Photos', DEFAULT_FILETYPES.PNG, 'catG'),
 		]);
 		
-
 		/////	 DEV TEST DISPLAY	/////
 		this.testInfos = this.add.text(this.scale.width - 30, 10, '', { align: 'right', lineSpacing: 10 }).setOrigin(1, 0);
 	}
