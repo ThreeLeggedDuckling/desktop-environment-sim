@@ -24,22 +24,20 @@ h1 {
 }
 
 .input-tip {
-	font-weight: 600;
-	/* color: #fff;
-	background-color: #7a0c7c;
-	padding: 0 2px; */
+	color: #7a0c7c;
+	font-style: italic;
 }
 
 .tooltip {
 	position: relative;
 	display: inline-block;
-	border-bottom: 1px dotted black;
+	border-bottom: 1px dotted #7a0c7c;
 }
 
 .tooltip .tooltip-text {
 	visibility: hidden;
-	width: 120px;
-	background-color: #000000b4;
+	width: 140px;
+	background-color: #5b085cd5;
 	color: #fff;
 	text-align: center;
 	border-radius: 6px;
@@ -49,14 +47,9 @@ h1 {
 	z-index: 1;
 	bottom: 100%;
 	left: 50%;
-	margin-left: -60px;
+	margin-left: -75px;
 }
 
 .tooltip:hover .tooltip-text {
 	visibility: visible;
-}
-
-canvas {
-	/* display: block; */
-	/* max-height: 50%; */
 }
