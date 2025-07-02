@@ -1,6 +1,6 @@
 import { BaseScene } from "./BaseScene.js";
 
-import { initMenuManger } from "../handlers/MenuManager.js";
+import { initMenuManger, MENUMANAGER } from "../handlers/MenuManager.js";
 
 import { ContextMenu, OptionObject } from "../gameObjects/ContextMenu.js";
 import { DialogWindow } from "../gameObjects/Windows.js";
@@ -22,9 +22,6 @@ export class DesktopScene extends BaseScene {
     super.create();
     initMenuManger(this);
 
-    // Add desktop background
-    const desktopBackground = this.add.image(0,0,'desktopBg').setOrigin(0);
-
     // Store original position of dragged elements
     let startPosition;
 
@@ -32,26 +29,57 @@ export class DesktopScene extends BaseScene {
     this.files = new Array();
     this.icons = new Array();
 
-
-    // PLACEHOLDER CONTEXTMENU
-    let contextMenu;
-
-    // DEV : test data display
-    this.testInfos = this.add.text(this.scale.width / 2, 15, '').setOrigin(0.5, 0);
-
-    // Pre-existing files and folders
+    // Add pre-existing files and folders
     this.files.push(
       new FolderObject('Corbeille', DEFAULT_FILETYPES.RECYCLEBIN),
-      new FileObject('cat', DEFAULT_FILETYPES.JPG, 'catG'),
-      new FileObject('duck', DEFAULT_FILETYPES.PNG, 'ducky'),
+      new FileObject('Chat gris', DEFAULT_FILETYPES.JPG, 'catG'),
+      new FileObject('Canard', DEFAULT_FILETYPES.PNG, 'ducky'),
       new FolderObject('Mes images', DEFAULT_FILETYPES.FOLDER, [
         new FileObject('Chat gris', DEFAULT_FILETYPES.PNG, 'catG'),
-        new FileObject('Chat orange', DEFAULT_FILETYPES.PNG, 'catO')
+        new FileObject('Chat orange', DEFAULT_FILETYPES.PNG, 'catO'),
+        new FileObject('Canard', DEFAULT_FILETYPES.PNG, 'ducky'),
       ]),
     );
 
     // Adding empty() method to the recycle bin folder
     this.files[0].empty = function() { this.content = []; };
+
+    // Create background context menu options
+    const desktopBgContextOpt = [
+      new OptionObject('Affichage', null, [   // A IMPLEMENTER
+        new OptionObject('Grandes icônes', null),
+        new OptionObject('Icônes moyennes', null),
+        new OptionObject('Petites icônes', null),
+      ]),
+      new OptionObject('Trier par', null, [   // A IMPLEMENTER
+        new OptionObject('Nom', null),
+        new OptionObject('Type d\'élement', null),
+      ]),
+      new OptionObject('Nouveau', null, [     // A IMPLEMENTER
+        new OptionObject('Dossier', null),
+        new OptionObject('Document Word', null),
+        new OptionObject('Présentation PowerPoint', null),
+        new OptionObject('Document texte', null),
+        new OptionObject('Feuille de calcul', null),
+      ]),
+      new OptionObject('Paramètres d\'affichage', null),    // A IMPLEMENTER
+      new OptionObject('Ouvrir dans le Terminal', null),    // A IMPLEMENTER
+      new OptionObject('Afficher plus d\'options', null),   // A IMPLEMENTER
+    ];
+
+    // Add desktop background
+    const desktopBackground = this.add.image(0,0,'desktopBg').setOrigin(0);
+    desktopBackground.setInteractive().on('pointerdown', (pointer) => {
+      if (pointer.rightButtonDown()) {
+        let posX = pointer.x, posY = pointer.y;
+        const contextual = new ContextMenu(this, posX, posY, desktopBgContextOpt);
+        contextual.adjustSelfPosition();
+    
+        this.add.existing(contextual);
+        MENUMANAGER.addMenu(contextual, pointer.downTime);
+      }
+    })
+
 
     // Create icons for each file and add it to the list of icons
     this.files.forEach((file, i) => { this.icons.push(new DesktopIcon(this, 40, 100 + (i * 100 + 10), file)); });
@@ -84,17 +112,10 @@ export class DesktopScene extends BaseScene {
 
     // When beginning drag on dragable element, 
     this.input.on('dragstart', (pointer, gameObject) => {
-      //debug
-      console.log('________');
-      console.log('last sp record', startPosition);
-
       // Store original position
       startPosition = { x: gameObject.x, y: gameObject.y };
 
-      //debug
-      console.log('new sp record', startPosition);
-      
-      // Bringdragged element to the forefront
+      // Bring dragged element to the forefront
       this.children.bringToTop(gameObject);
     });
 
@@ -124,6 +145,26 @@ export class DesktopScene extends BaseScene {
 
             // Else spawn dialog window with action choices
             else {
+              const dialogOptions = [
+               {
+                  label: 'Remplacer',
+                  callback: () => {
+                    const i = this.files.indexOf(gameObject.file);
+                    this.files.splice(i, 1);
+                    gameObject.file.destr
+                    gameObject.destroy();
+                  }
+                },
+                { 
+                  label: 'Ignorer',
+                  callback: () => {}
+                },
+                { 
+                  label: 'Comparer',
+                  callback: () => {}
+                }, 
+              ]
+
               // PLACEHOLDER CHOIX
               const dialog = new DialogWindow(
                 this,
@@ -132,11 +173,7 @@ export class DesktopScene extends BaseScene {
                 500,  // A MODIFIER
                 `La destination comprend déjà un fichier nommé « ${gameObject.file.name}${gameObject.file.fileType.extension} ».`,
                 true,
-                [
-                  { label: 'Remplacer', callback: () => {} },
-                  { label: 'Ignorer', callback: () => {} },
-                  { label: 'Comparer', callback: () => {} },
-                ]
+                dialogOptions
               );
             }
           }
@@ -161,9 +198,6 @@ export class DesktopScene extends BaseScene {
   }
 
   update() {
-    // DEV : test data display
-    this.testInfos.setText([
-      // 'TEST DATA',
-    ]);
+
   }
 }

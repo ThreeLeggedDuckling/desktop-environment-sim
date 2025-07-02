@@ -1,8 +1,12 @@
 import { MENUMANAGER } from "../handlers/MenuManager.js";
 
 import { ContextMenu, OptionObject } from "./ContextMenu.js";
-import { DEFAULT_FILETYPES, FileObject, FolderObject, SystemObject } from "./Files.js";
+import { FileObject, FolderObject, SystemObject } from "./Files.js";
+import { DialogWindow } from "../gameObjects/Windows.js";
 
+/**
+ * Container object of an icon.
+ */
 export class Icon extends Phaser.GameObjects.Container {
   /**
    * Container object of an icon.
@@ -54,6 +58,9 @@ export class Icon extends Phaser.GameObjects.Container {
 
 }
 
+/**
+ * Container object of a desktop icon.
+ */
 export class DesktopIcon extends Icon {
   /**
    * Container object of a desktop icon.
@@ -116,7 +123,6 @@ export class DesktopIcon extends Icon {
     this.on('pointerout', () => { this.background.setAlpha(this.isSelected ? 0.5 : 0); });
     this.on('pointerdown', (pointer) => {
       if (pointer.leftButtonDown()) this.setSelected(true);
-
       if (pointer.rightButtonDown()) this.spawnMenu(pointer);
     })
 
@@ -141,17 +147,36 @@ export class DesktopIcon extends Icon {
   spawnMenu(pointer) {
     let posX = pointer.x, posY = pointer.y;
 
+    /**
+     * Spawn a dummy dialog window
+     */
+    const spawnDialog = () => {
+      const dialog = new DialogWindow(
+        this.scene,
+        this.scene.scale.width /2,
+        this.scene.scale.height /2,
+        500,
+        [
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras tellus libero, maximus in maximus at, molestie sed ligula.',
+          'Donec nec turpis placerat, mollis tellus vel, dignissim tellus.'
+        ],
+        false,
+        [
+          { label: 'Btn 1', callback: () => { console.log('je suis btn 1'); } },
+          { label: 'Btn 2', callback: () => {} },
+          { label: 'Btn 3', callback: () => {} },
+        ]
+      );
+    }
+
     // PLACEHOLDER CONTEXTE MENU
     const contextual = new ContextMenu(this.scene, posX, posY, [
-      new OptionObject('option 1', null),
-      new OptionObject('option 2', null),
-      new OptionObject('option 3', null, [
-        new OptionObject('aaaaaa', null),
-        new OptionObject('aaaaaa', null),
-        new OptionObject('aaaaaa', null),
-        new OptionObject('aaaaaa', null),
-        new OptionObject('aaaaaa', null),
+      new OptionObject('Dialog', spawnDialog),
+      new OptionObject('Sous-options', null, [
+        new OptionObject('Sous option 1'),
+        new OptionObject('Sous option 2'),
       ]),
+      new OptionObject('Option vide'),
     ]);
     contextual.adjustSelfPosition();
 
@@ -169,9 +194,12 @@ export class DesktopIcon extends Icon {
 
 }
 
+/**
+ * Container object of a taskbar pin.
+ */
 export class TaskBarPin extends Icon {
   /**
-   * 
+   * Container object of a taskbar pin.
    * @param {Phaser.Scene} scene - Parent scene containing the icon
    * @param {number} x - Horizontal position within the scene
    * @param {number} y - Vertical position within the scene
@@ -205,29 +233,61 @@ export class TaskBarPin extends Icon {
     this.on('pointerover', () => { this.background.setAlpha(0.2); });
     this.on('pointerout', () => { this.background.setAlpha(this.isSelected ? 0.5 : 0); });
 
+    // Add on click behavior (drag behavior managed by taskbar)
     this.on('pointerdown', (pointer) => {
       // MODIFIER CLICK GAUCHE
       // if (pointer.leftButtonDown()) this.setSelected(true);
 
-      if (pointer.rightButtonDown()) {
-        let posX = pointer.x, posY = pointer.y;
-
-        // PLACEHOLDER CONTEXTE MENU
-        const contextual = new ContextMenu(scene, posX, posY, [
-          new OptionObject('option 1', null),
-          new OptionObject('option 2', null),
-          new OptionObject('option 3', null, [ new OptionObject('a', null) ]),
-        ]);
-
-        scene.add.existing(contextual);
-        MENUMANAGER.addMenu(contextual, pointer.downTime);
-      }
+      if (pointer.rightButtonDown()) this.spawnMenu(pointer);
     })
-
-    // Drag behavior managed inside TaskBar
 
     // Add the icon to the scene
     scene.add.existing(this);
+  }
+
+  /**
+   * Spawn the pin's contextual menu.
+   * @param {Phaser.Input.Pointer} pointer
+   */
+  spawnMenu(pointer) {
+    let posX = pointer.x, posY = pointer.y;
+
+    /**
+     * Spawn a dummy dialog window
+     */
+    const spawnDialog = () => {
+      const dialog = new DialogWindow(
+        this.scene,
+        this.scene.scale.width /2,
+        this.scene.scale.height /2,
+        500,
+        [
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras tellus libero, maximus in maximus at, molestie sed ligula.',
+          'Donec nec turpis placerat, mollis tellus vel, dignissim tellus.'
+        ],
+        false,
+        [
+          { label: 'Btn 1', callback: () => { console.log('je suis btn 1'); } },
+          { label: 'Btn 2', callback: () => {} },
+          { label: 'Btn 3', callback: () => {} },
+        ]
+      );
+    }
+
+    // PLACEHOLDER CONTEXTE MENU
+    const contextual = new ContextMenu(this.scene, posX, posY, [
+      new OptionObject('Option 1'),
+      new OptionObject('Option 2'),
+      new OptionObject('Option 3'),
+    ]);
+
+    // Update menu position to be above taskbar and fully visible
+    // @ts-ignore
+    const newPosY = this.scene.scale.height - this.scene.taskBar.height - contextual.background.height;
+    contextual.adjustSelfPosition(null, newPosY);
+
+    this.scene.add.existing(contextual);
+    MENUMANAGER.addMenu(contextual, pointer.downTime);
   }
 
 }

@@ -3,8 +3,11 @@ import { MENUMANAGER } from "../handlers/MenuManager.js";
 import { ContextMenu, OptionObject } from "./ContextMenu.js";
 import { DEFAULT_FILETYPES, FileObject, FolderObject, SystemObject } from "./Files.js";
 import { TaskBarPin } from "./Icons.js";
-import { DialogWindow } from "../gameObjects/Windows.js";
+import { DialogWindow, WindowObject } from "../gameObjects/Windows.js";
 
+/**
+ * Container object of a taskbar.
+ */
 export class TaskBar extends Phaser.GameObjects.Container {
   /**
    * Container object of a taskbar.
@@ -16,14 +19,15 @@ export class TaskBar extends Phaser.GameObjects.Container {
     super(scene, scene.scale.width / 2, scene.scale.height - 25);
 
     const systemPins = [
-      // new SystemObject('Volume', 'winMenu', 'gestion du son'),
+      // new SystemObject('Réseau', 'system', 'gestion du son'),
+      // new SystemObject('Volume', 'system', 'gestion du son'),
     ]
 
     // Add menu pin to taskbar
     taskPins.unshift(new SystemObject('Démarrer', 'winMenu', ['option 1', 'option 2', 'option 3']));
     
     // Create background component
-    this.background = scene.add.rectangle(0, 0, scene.scale.width, 50, 0xffffff, 0.9)
+    this.background = scene.add.rectangle(0, 0, scene.scale.width, 50, 0xffffff, 0.9).setStrokeStyle(1, 0xbfbfbf);
     this.add(this.background);
 
     // Create task pins container
@@ -76,7 +80,7 @@ export class TaskBar extends Phaser.GameObjects.Container {
     this.add(this.systemContainer);
 
     // Align system pins container to the right of the taskbar
-    this.systemContainer.setX(this.background.width / 2 - (this.systemContainer.length * 40 + 10))  // not the cleanest solution but a working one
+    Phaser.Display.Align.In.RightCenter(this.systemContainer, this.background, - (this.systemContainer.length * 40 + 5));
 
     // Set up taskbar to allow interactivity
     this.setSize(this.background.width, this.background.height);
@@ -95,32 +99,29 @@ export class TaskBar extends Phaser.GameObjects.Container {
    * @param {Phaser.Input.Pointer} pointer - Pointer input, used for positionning
    */
   spawnMenu(pointer) {
-    let posX = pointer.x, posY = pointer.y;
+    const posX = pointer.x, posY = pointer.y;
+    //@ts-ignore
+    const screenCenter = { x: this.scene.scale.width / 2, y: (this.scene.scale.height - this.scene.taskBar.height) / 2 };
+
+    /**
+     * Spawn a dummy dialog window
+     */
+    const openTaskManager = () => {
+      //@ts-ignore
+      const tm = new WindowObject(this.scene, screenCenter.x, screenCenter.y, 700, 500, new FileObject('Gestionnaire des tâches', DEFAULT_FILETYPES.SYSTEM, null), { isDefault: false }, { isDefault: false });
+    }
+
+    /**
+     * Spawn a dummy dialog window
+     */
+    const openTaskBarSettings = () => {
+      //@ts-ignore
+      const tm = new WindowObject(this.scene, screenCenter.x, screenCenter.y, 800, 800, new FileObject('Paramètres', DEFAULT_FILETYPES.SYSTEM, null), { isDefault: false }, { isDefault: false });
+    }
 
     const contextual = new ContextMenu(this.scene, posX, posY, [
-      new OptionObject('test', () => {
-        const dialog = new DialogWindow(
-              this.scene,
-              this.scene.scale.width /2,
-              this.scene.scale.height /2,
-              500,
-              [
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras tellus libero, maximus in maximus at, molestie sed ligula.',
-                'Donec nec turpis placerat, mollis tellus vel, dignissim tellus.'
-              ],
-              false,
-              [
-                { label: 'Btn 1', callback: () => {} },
-                { label: 'Btn 2', callback: () => {} },
-                { label: 'Btn 3', callback: () => {} },
-              ]
-            );
-      }, null),
-      new OptionObject('voilà', null, [
-        new OptionObject('sous option', null, null),
-        new OptionObject('sous option', null, null),
-      ]),
-      new OptionObject('ok', null, null),
+      new OptionObject('Gestionnaire des tâches', openTaskManager),
+      new OptionObject('Paramètres de la barre des tâches', openTaskBarSettings),
     ]);
     
     // Update menu position to be above taskbar and fully visible
