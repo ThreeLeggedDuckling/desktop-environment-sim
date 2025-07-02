@@ -1,19 +1,25 @@
 import { HOVERMANAGER } from "../handlers/HoverManager.js";
 
+/**
+ * Object representation of a menu's option.
+ */
 export class OptionObject {
   /**
    * Object representation of a menu's option.
    * @param {string} label - Label of the option
-   * @param {Function | null} callback - Callback triggered by clicking the option, nullable if the option has sub-options
-   * @param {Array<OptionObject> | null} subOptions - Arrays of sub-options linked to the option. Default null.
+   * @param {Function} callback - Callback triggered by clicking the option, nullable if the option has sub-options
+   * @param {Array<OptionObject>} subOptions - Arrays of sub-options linked to the option. Default null.
    */
-  constructor(label, callback, subOptions = null) {
+  constructor(label, callback = null, subOptions = null) {
     this.label = label;
     this.callback = callback;
     this.subOptions = subOptions;
   }
 }
 
+/**
+ * Container object of a menu option.
+ */
 export class OptionContainer extends Phaser.GameObjects.Container {
   /**
    * Container object of a menu option.
@@ -32,6 +38,11 @@ export class OptionContainer extends Phaser.GameObjects.Container {
     this.label = scene.add.text(0, 0, option.label, { color: '#000' }).setPadding(10).setOrigin(0, 0);
     this.background = scene.add.rectangle(0, 0, 100, this.label.height, 0x9dec6c).setAlpha(0).setOrigin(0, 0);
     this.add([this.label, this.background]);
+    if (option.subOptions) {
+      this.moreCue = scene.add.text(0, 0, '>', { color: '#000' }).setPadding(10).setOrigin(1, 0);
+      this.add(this.moreCue);
+      console.log(this.moreCue);
+    }
   }
 
   /**
@@ -41,7 +52,9 @@ export class OptionContainer extends Phaser.GameObjects.Container {
    */
   setupContainer(width, height) {
     // Resize background
+    this.background.setSize(width, height);
     this.background.setDisplaySize(width, height);
+    if (this.moreCue) Phaser.Display.Align.In.RightCenter(this.moreCue, this.background);
       
     // Setup interactivity
     this.setInteractive(new Phaser.Geom.Rectangle(0, 0, width, height), Phaser.Geom.Rectangle.Contains);
@@ -82,12 +95,16 @@ export class OptionContainer extends Phaser.GameObjects.Container {
       while (menu?.parentMenu) {
         menu = menu.parentMenu;
       }
-      
+
+      // Destroy menu
       menu.destroyMenuChain();
     })
   }
 }
 
+/**
+ * Container object of a contextual menu.
+ */
 export class ContextMenu extends Phaser.GameObjects.Container {
   /**
    * Container object of a contextual menu.
@@ -117,9 +134,10 @@ export class ContextMenu extends Phaser.GameObjects.Container {
       optionContainers.push(option);
       
       // Update stored dimensions values
+      let optionWidth = option.moreCue ? option.label.width + option.moreCue.width : option.label.width;
       lastHeight = option.background.height;
       lastY = option.y;
-      maxOptWidth = Math.max(maxOptWidth, option.label.width);
+      maxOptWidth = Math.max(maxOptWidth, optionWidth + 30);
       maxOptHeight = Math.max(maxOptHeight, option.label.height);
     }
 
@@ -130,7 +148,9 @@ export class ContextMenu extends Phaser.GameObjects.Container {
       opt.setupContainer(maxOptWidth, maxOptHeight);
     }
 
-    this.background = scene.add.rectangle(0, 0, maxOptWidth, lastY + lastHeight, 0xffffff).setAlpha(0.8).setOrigin(0, 0);
+    this.background = scene.add.rectangle(0, 0, maxOptWidth, lastY + lastHeight, 0xffffff)
+      .setStrokeStyle(1, 0xbfbfbf).setAlpha(0.9)
+      .setOrigin(0, 0);
     this.addAt(this.background);
 
     // @ts-ignore
