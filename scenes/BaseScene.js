@@ -1,7 +1,7 @@
+/**
+ * Base scene implementing needed functions for other scenes : preaload(), setupFullscreenToggle(), returnToMenu(), checkDoubleClick().
+ */
 export class BaseScene extends Phaser.Scene {
-  /**
-   * Base scene implementing needed functions for other scenes : preaload(), setupFullscreenToggle(), returnToMenu(), checkDoubleClick().
-   */
   constructor(key) {
     super(key);
   }
@@ -10,8 +10,12 @@ export class BaseScene extends Phaser.Scene {
     // Icons assets
     this.load.image('binEmpty', 'assets/icons/win_recyclebin_empty.png');
 		this.load.image('binFull', 'assets/icons/win_recyclebin_full.png');
+		this.load.image('close', 'assets/icons/closeWindow.png');
 		this.load.image('folder', 'assets/icons/folder.png');
 		this.load.image('picture', 'assets/icons/picture.png');
+		this.load.image('maximize', 'assets/icons/maximizeWindow.png');
+		this.load.image('minimize', 'assets/icons/minimizeWindow.png');
+		this.load.image('restore', 'assets/icons/restoreWindow.png');
 		this.load.image('winMenu', 'assets/icons/win_menu.png');
     
     // Placeholder icons
@@ -27,12 +31,14 @@ export class BaseScene extends Phaser.Scene {
   
   create() {
     // Store click occurence used in checkDoubleClick()
-    this.firstClickTime = 0;
+    this.firstClickTime = null;
     
     // Disable browser right click behavior
     this.input.mouse.disableContextMenu();
     // Allow fullscreen toggle
     this.setupFullscreenToggle('SPACE', 'ESC');
+
+    // DEV NEEDS
     // Allow keyboard shortcut to go to main menu scene
     this.returnToMainMenu();
     
@@ -66,20 +72,21 @@ export class BaseScene extends Phaser.Scene {
   /**
    * Detect if two clicks occure within a given interval
    * @param {number} interval - Time in milliseconds. Default set to 500ms.
-   * @returns 
+   * @returns {boolean}
    */
   checkDoubleClick(interval = 500) {
-    let isDouble = false;
-    
-    if (this.firstClickTime === 0) {
+    if (!this.firstClickTime) {
       this.firstClickTime = Date.now();
-      return isDouble;
+      return false;
     }
     
-    let delay = Date.now() - this.firstClickTime;
-    if (delay < interval) isDouble = true;
-    this.firstClickTime = 0
-    return isDouble;
+    if (Date.now() - this.firstClickTime >= interval) {
+      this.firstClickTime = Date.now();
+      return false;
+    }
+    
+    this.firstClickTime = null;
+    return true;
   }
   
 }
