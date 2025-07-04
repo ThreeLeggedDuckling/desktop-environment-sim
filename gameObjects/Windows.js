@@ -99,8 +99,9 @@ class WindowHeader extends Phaser.GameObjects.Container {
     this.setSize(parentWindow.unmaximized.width, this.height);
 
     // Create header background
-    // this.background = scene.add.rectangle(0, 0, parentWindow.unmaximized.width, this.height, 0xf5f5f5).setStrokeStyle(1, 0xededed);
-    this.background = scene.add.rectangle(0, 0, parentWindow.unmaximized.width, this.height, 0xaadd44).setStrokeStyle(1, 0xededed);
+    this.background = scene.add.rectangle(0, 0, parentWindow.unmaximized.width, this.height, 0xf5f5f5).setStrokeStyle(1, 0xededed);
+
+    // this.background = scene.add.rectangle(0, 0, parentWindow.unmaximized.width, this.height, 0xaadd44).setStrokeStyle(1, 0xededed);
     this.add(this.background);
 
     // If not a SYSTEM file, create the window icon based ont the filetype
@@ -205,8 +206,9 @@ class WindowFooter extends Phaser.GameObjects.Container {
     const contentHeight = 18;
 
     // Create header background
-    // this.background = scene.add.rectangle(0, 0, parentWindow.unmaximized.width, this.height, 0xf5f5f5).setStrokeStyle(1, 0xededed);
-    this.background = scene.add.rectangle(0, 0, parentWindow.unmaximized.width, this.height, 0xaadd44).setStrokeStyle(1, 0xededed);
+    this.background = scene.add.rectangle(0, 0, parentWindow.unmaximized.width, this.height, 0xf5f5f5).setStrokeStyle(1, 0xededed);
+
+    // this.background = scene.add.rectangle(0, 0, parentWindow.unmaximized.width, this.height, 0xaadd44).setStrokeStyle(1, 0xededed);
     this.add(this.background);
 
     scene.add.existing(this);
@@ -299,7 +301,7 @@ export class WindowObject extends Phaser.GameObjects.Container {
     }
 
     //debug
-    console.log("fenêtre", this);
+    // console.log("fenêtre", this);
     
     // Create content container
     this.bodyPadding = (this.header || this.footer) ? 10 : 20
@@ -308,7 +310,7 @@ export class WindowObject extends Phaser.GameObjects.Container {
     
     this.bodyContainer = new Phaser.GameObjects.Container(scene, 0, bodyY).setSize(width - this.bodyPadding, bodyHeight);
     //debug
-    this.bodyContainer.add(scene.add.rectangle(0, 0, width - this.bodyPadding, bodyHeight).setStrokeStyle(1, 0xff0000));
+    // this.bodyContainer.add(scene.add.rectangle(0, 0, width - this.bodyPadding, bodyHeight).setStrokeStyle(1, 0xff0000));
 
     switch (file.fileType.type) {   // CASE LEFT TO IMPLEMENT : 'app', 'system', 'text'
       case 'folder' :
@@ -341,7 +343,7 @@ export class WindowObject extends Phaser.GameObjects.Container {
     // Add window resizability
     this.resizeHandles = {
       // left: scene.add.rectangle(- width / 2, 0, 10, height, 0x000000, 0).setOrigin(0.5),
-      right: scene.add.rectangle(width / 2, 0, 10, height, 0x000000, 0).setOrigin(0.5),
+      // right: scene.add.rectangle(width / 2, 0, 10, height, 0x000000, 0).setOrigin(0.5),
       // top: scene.add.rectangle(0, - height / 2, 10, height, 0x000000, 0).setOrigin(0.5),
       // bottom: scene.add.rectangle(0, height / 2, 10, height, 0x000000, 0).setOrigin(0.5),
     }
