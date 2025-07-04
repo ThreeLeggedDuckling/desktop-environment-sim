@@ -1,5 +1,3 @@
-import { MENUMANAGER } from "../handlers/MenuManager.js";
-
 import { ContextMenu, OptionObject } from "./ContextMenu.js";
 import { DEFAULT_FILETYPES, FileObject, FolderObject, SystemObject } from "./Files.js";
 import { TaskBarPin } from "./Icons.js";
@@ -129,7 +127,8 @@ export class TaskBar extends Phaser.GameObjects.Container {
     contextual.adjustSelfPosition(null, newPosY);
 
     this.scene.add.existing(contextual);
-    MENUMANAGER.addMenu(contextual, pointer.downTime);
+    //@ts-ignore
+    this.scene.CONTEXTUAL_MANAGER.addMenu(contextual, pointer.downTime);
   }
 
 }

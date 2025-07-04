@@ -1,6 +1,6 @@
 import { BaseScene } from "./BaseScene.js";
 
-import { initMenuManger, MENUMANAGER } from "../handlers/MenuManager.js";
+import { initContextualManager } from "../handlers/MenuManager.js";
 
 import { ContextMenu, OptionObject } from "../gameObjects/ContextMenu.js";
 import { DialogWindow } from "../gameObjects/Windows.js";
@@ -13,43 +13,39 @@ export class DesktopScene extends BaseScene {
     super({ key: 'DesktopScene' });
   }
 
-  preload() {
-		super.preload();
-    this.load.image('desktopBg', 'assets/pictures/leafs.jpg');
-	}
-
   create() {
     super.create();
-    initMenuManger(this);
+    // Add handlers
+    initContextualManager(this);
 
-    // Store original position of dragged elements
-    let startPosition;
+    this.displayExtension = false;    // Store if icon's legend should include extension
+    this.files = new Array();   // Store the scene's File objects
+    this.icons = new Array();   // Store the scene's Icon objects
 
-    // The scene's file and Icon objects
-    this.files = new Array();
-    this.icons = new Array();
+    let startPosition;    // Store original position of dragged elements
 
     // Add pre-existing files and folders
     this.files.push(
       new FolderObject('Corbeille', DEFAULT_FILETYPES.RECYCLEBIN),
-      new FileObject('Chat gris', DEFAULT_FILETYPES.JPG, 'catG'),
-      new FileObject('Canard', DEFAULT_FILETYPES.PNG, 'ducky'),
+      new FileObject('Dessin fleurs', DEFAULT_FILETYPES.JPG, ''),
+      new FileObject('Canard pixel', DEFAULT_FILETYPES.PNG, ''),
       new FolderObject('Mes images', DEFAULT_FILETYPES.FOLDER, [
-        new FileObject('Chat gris', DEFAULT_FILETYPES.PNG, 'catG'),
-        new FileObject('Chat orange', DEFAULT_FILETYPES.PNG, 'catO'),
-        new FileObject('Canard', DEFAULT_FILETYPES.PNG, 'ducky'),
+        new FileObject('Canard pixel', DEFAULT_FILETYPES.PNG, ''),
+        new FileObject('Dessin fleurs', DEFAULT_FILETYPES.PNG, ''),
+        new FileObject('fleurs', DEFAULT_FILETYPES.PNG, ''),
       ]),
     );
-
     // Adding empty() method to the recycle bin folder
     this.files[0].empty = function() { this.content = []; };
 
     // Create background context menu options
+    this.extOption = new OptionObject('Afficher extensions de noms de fichiers', () => { this.toggleExtensions(this.extSwitch) });
     const desktopBgContextOpt = [
       new OptionObject('Affichage', null, [   // A IMPLEMENTER
-        new OptionObject('Grandes icônes', null),
-        new OptionObject('Icônes moyennes', null),
-        new OptionObject('Petites icônes', null),
+        // new OptionObject('Grandes icônes', null),
+        // new OptionObject('Icônes moyennes', null),
+        // new OptionObject('Petites icônes', null),
+        this.extOption,
       ]),
       new OptionObject('Trier par', null, [   // A IMPLEMENTER
         new OptionObject('Nom', null),
@@ -64,7 +60,6 @@ export class DesktopScene extends BaseScene {
       ]),
       new OptionObject('Paramètres d\'affichage', null),    // A IMPLEMENTER
       new OptionObject('Ouvrir dans le Terminal', null),    // A IMPLEMENTER
-      new OptionObject('Afficher plus d\'options', null),   // A IMPLEMENTER
     ];
 
     // Add desktop background
@@ -76,38 +71,47 @@ export class DesktopScene extends BaseScene {
         contextual.adjustSelfPosition();
     
         this.add.existing(contextual);
-        MENUMANAGER.addMenu(contextual, pointer.downTime);
+        //@ts-ignore
+        this.CONTEXTUAL_MANAGER.addMenu(contextual, pointer.downTime);
       }
     })
 
+    // Add button to toggle display of file extensions
+    this.extSwitch = this.add.text(1900, 20, 'Afficher extensions', { backgroundColor: '#b30000', fontSize: '15px', align: 'center', wordWrap: { width: 100, useAdvancedWrap: true } }).setPadding(5).setAlpha(0.7).setOrigin(1,0);
+    this.extSwitch.setInteractive()
+      .on('pointerover', () => { this.extSwitch.setAlpha(1); })
+      .on('pointerout', () => { this.extSwitch.setAlpha(0.7); })
+      .on('pointerdown', () => { this.toggleExtensions(this.extSwitch) });
 
     // Create icons for each file and add it to the list of icons
-    this.files.forEach((file, i) => { this.icons.push(new DesktopIcon(this, 40, 100 + (i * 100 + 10), file)); });
+    for (const f of this.files) {
+      this.icons.push(new DesktopIcon(this, 0, 0, f));
+    }
 
-    // Define mouse click interactions
+    // Place icons in a grid
+    Phaser.Actions.GridAlign(this.icons, {
+      height: 8,
+      cellWidth: 110,
+      cellHeight: 120
+    });
+
+    // On click, get the last selected icon
+    // Check if is the same object instance
     this.input.on('pointerdown', (pointer, position) => {
-      // Get the last selected icon
       let previouslyClicked = position.find(obj => obj instanceof DesktopIcon);
-
+      
       for (let icon of this.icons) {
         // If the icon left-clicked on isn't the previously selected one or if the last click is the mouse right button
         // set the icon isSelected property to false
         if (icon !== previouslyClicked || pointer.rightButtonDown()) icon.setSelected(false);
 
         // If the icon left-clicked is the previously selected one and constitute a double click
-        // open the corresponding "window" and set the icon isSelected property to false
-        if (icon === previouslyClicked && this.checkDoubleClick()) {
-          // ICI IMPLMENTER DOUBLE CLICK
-          console.log(icon.name, 'opened');
+        // open the corresponding window and set the icon isSelected property to false
+        if (icon === previouslyClicked && pointer.leftButtonDown() && this.checkDoubleClick()) {
+          icon.spawnWindow();
           icon.setSelected(false);
         }
       }
-      
-      // On right button click, open the pointer's target context menu
-      if (pointer.rightButtonDown()) {
-        // ICI IMPLEMENTER MENU CONTEXTUEL
-      }
-
     });
 
     // When beginning drag on dragable element, 
@@ -188,16 +192,40 @@ export class DesktopScene extends BaseScene {
 			}
     })
 
-
     // PLACEHOLDER TASKBAR
     this.taskBar = new TaskBar(this, [
       new FolderObject('Explorateur de fichiers'),
       new FileObject('Photos', DEFAULT_FILETYPES.PNG, 'catG'),
     ]);
 
+
+    // DEV : test data display
+    // this.testInfos = this.add.text(120, 50, ['[placeholder]','','','',''], { fontSize: '18px', backgroundColor: '#990000' })
+    //   .setPadding(5).setOrigin(0);
+
+  }
+  
+  /**
+   * Toggle the display of files extensions on icons label.
+   * @param {Phaser.GameObjects.Text} btn - Toggle button
+   */
+  toggleExtensions(btn) {
+    // Toggle displayExtension
+    //@ts-ignore
+    btn.scene.displayExtension = !this.displayExtension;
+
+    // Update contextual option
+    this.extOption.label = `${this.displayExtension ? 'Masquer' : 'Afficher'} extensions de noms de fichiers`;
+
+    // Update button
+    btn.setStyle({ backgroundColor: this.displayExtension ? '#33cc33' : '#b30000' });
+    btn.setText(this.displayExtension ? 'Masquer extensions' : 'Afficher extensions');
+
+    // Update icons
+    // @ts-ignore
+    for (const i of btn.scene.icons) {
+      i.iconLegend.text = `${i.file.name}${this.displayExtension ? i.file.fileType.extension : ''}`;
+    }
   }
 
-  update() {
-
-  }
 }

@@ -1,5 +1,3 @@
-import { HOVERMANAGER } from "../handlers/HoverManager.js";
-
 /**
  * Object representation of a menu's option.
  */
@@ -41,7 +39,6 @@ export class OptionContainer extends Phaser.GameObjects.Container {
     if (option.subOptions) {
       this.moreCue = scene.add.text(0, 0, '>', { color: '#000' }).setPadding(10).setOrigin(1, 0);
       this.add(this.moreCue);
-      console.log(this.moreCue);
     }
   }
 
@@ -75,29 +72,19 @@ export class OptionContainer extends Phaser.GameObjects.Container {
   addInteractions() {
     this.on('pointerover', () => {
       this.background.setAlpha(0.5);
-      HOVERMANAGER.setHoveredOption(this);
-
-      // On hover, display sub menu if present
-      this.subMenu?.setVisible(true);
+      //@ts-ignore
+      this.scene.CONTEXTUAL_MANAGER.setHoveredOption(this);
     });
 
-    this.on('pointerout', (pointer) => {
+    this.on('pointerout', (pointer, position) => {
       this.background.setAlpha(0);
-      HOVERMANAGER.clearHoveredOption(this);
+      //@ts-ignore
+      this.scene.CONTEXTUAL_MANAGER.clearHoveredOption(pointer, position);   // CLEAR HOVERED
     });
 
-    this.on('pointerdown', () => {
+    this.on('pointerdown', (pointer) => {
       // Execute option callback
       this.option.callback?.();
-      
-      // Get menu root
-      let menu = this.parentMenu;
-      while (menu?.parentMenu) {
-        menu = menu.parentMenu;
-      }
-
-      // Destroy menu
-      menu.destroyMenuChain();
     })
   }
 }
@@ -116,8 +103,8 @@ export class ContextMenu extends Phaser.GameObjects.Container {
    */
   constructor(scene, x, y, options, parentMenu = null) {
     super(scene, x, y);
-    HOVERMANAGER.init(scene);
     this.parentMenu = parentMenu;
+    this.options = [];
     this.childrenMenus = [];
 
     // Store values for options position and menu dimensions
@@ -130,7 +117,9 @@ export class ContextMenu extends Phaser.GameObjects.Container {
 
       // Create option object
       const option = new OptionContainer(scene, 0, posY, opt);
+      this.options.push(option);
       this.add(option);
+
       optionContainers.push(option);
       
       // Update stored dimensions values

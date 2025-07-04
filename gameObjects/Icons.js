@@ -1,8 +1,6 @@
-import { MENUMANAGER } from "../handlers/MenuManager.js";
-
 import { ContextMenu, OptionObject } from "./ContextMenu.js";
 import { FileObject, FolderObject, SystemObject } from "./Files.js";
-import { DialogWindow } from "../gameObjects/Windows.js";
+import { DialogWindow, WindowObject } from "../gameObjects/Windows.js";
 
 /**
  * Container object of an icon.
@@ -20,8 +18,9 @@ export class Icon extends Phaser.GameObjects.Container {
   constructor(scene, x, y, file, dimensions, padding = 3) {
     super(scene, x, y);
 
-    // Set associated file
     this.file = file;
+    this.name = `${file.name}${file.fileType.extension}`;
+    
     // Store if the icon is actively selected
     this.isSelected = false;
 
@@ -58,6 +57,7 @@ export class Icon extends Phaser.GameObjects.Container {
 
 }
 
+// IMPLEMENTER BOUTON AFFICHAGE EXTENSION
 /**
  * Container object of a desktop icon.
  */
@@ -95,12 +95,8 @@ export class DesktopIcon extends Icon {
     const paddingY = Array.isArray(padding) ? padding[1] * 2 : paddingX;
 
     // Initiate additional icon components
-    this.iconLegend = scene.add.text(
-      0,
-      0,
-      `${file.name}${file.fileType.extension}`,
-      { fontSize: '16px', align: 'center', wordWrap: { width: dimensions + paddingX, useAdvancedWrap: true } }
-    ).setOrigin(0.5, 0.5);
+    const legendStyle = { fontSize: '16px', align: 'center', wordWrap: { width: dimensions + paddingX, useAdvancedWrap: true } };
+    this.iconLegend = scene.add.text(0, 0, file.name, legendStyle).setOrigin(0.5);
 
     // Get components dimensions
     const iconHeight = this.icon.displayHeight;
@@ -144,6 +140,10 @@ export class DesktopIcon extends Icon {
     }
   }
 
+  /**
+   * Spawn the icon's contextual menu.
+   * @param {Phaser.Input.Pointer} pointer 
+   */
   spawnMenu(pointer) {
     let posX = pointer.x, posY = pointer.y;
 
@@ -170,6 +170,7 @@ export class DesktopIcon extends Icon {
     }
 
     // PLACEHOLDER CONTEXTE MENU
+    /*
     const contextual = new ContextMenu(this.scene, posX, posY, [
       new OptionObject('Dialog', spawnDialog),
       new OptionObject('Sous-options', null, [
@@ -178,10 +179,28 @@ export class DesktopIcon extends Icon {
       ]),
       new OptionObject('Option vide'),
     ]);
+    */
+    const contextual = new ContextMenu(this.scene, posX, posY, [
+      new OptionObject('Option 1'),
+      new OptionObject('Option 2'),
+      new OptionObject('Option 3'),
+    ]);
     contextual.adjustSelfPosition();
 
     this.scene.add.existing(contextual);
-    MENUMANAGER.addMenu(contextual, pointer.downTime);
+    //@ts-ignore
+    this.scene.CONTEXTUAL_MANAGER.addMenu(contextual, pointer.downTime);
+  }
+
+  /**
+   * Spawn a window for the icon's content.
+   */
+  spawnWindow() {
+    //@ts-ignore
+    const screenCenter = { x: this.scene.scale.width / 2, y: (this.scene.scale.height - this.scene.taskBar.height) / 2 };
+
+    //@ts-ignore
+    const contentWindow = new WindowObject(this.scene, screenCenter.x, screenCenter.y, 800, 600, this.file, { isDefault: false }, { isDefault: false })
   }
 
   /**
@@ -287,7 +306,8 @@ export class TaskBarPin extends Icon {
     contextual.adjustSelfPosition(null, newPosY);
 
     this.scene.add.existing(contextual);
-    MENUMANAGER.addMenu(contextual, pointer.downTime);
+    //@ts-ignore
+    this.scene.CONTEXTUAL_MANAGER.addMenu(contextual, pointer.downTime);
   }
 
 }
