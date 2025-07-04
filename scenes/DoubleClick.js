@@ -1,21 +1,16 @@
 import { BaseScene } from './BaseScene.js';
+import { SceneReturnBtn } from '../gameObjects/Buttons.js';
 
 export class DoubleClick extends BaseScene {
   constructor() {
     super({ key: 'DoubleClick' });
   }
 
-  preload() {
-		super.preload();
-    this.load.image('ducky', 'assets/misc/ducky.png');
-    this.load.image('duckyGS', 'assets/misc/duckyGS.png');
-    }
-
   create() {
     super.create();
 
     const instructionsTxt = [
-			'Faites deux cliques rapides successifs sur le canard pour lui rendre ses couleurs.',
+			'Faites deux clics rapides successifs sur le canard pour lui rendre ses couleurs.',
     ]
     const instructionsStyle = {
       fontStyle: 'bold',
@@ -23,6 +18,10 @@ export class DoubleClick extends BaseScene {
       align: 'center',
       wordWrap: { width: 1000, useAdvancedWrap: true }
     }
+    let blinkInterval;
+
+    // Add return to menu button
+    const returnBtn = new SceneReturnBtn(this, 'ExercicesMenu', 'Menu exercices').setPosition(200, 200);
 
     // Create instructions display
     const instructions = this.add.text(this.scale.width / 2, 100, instructionsTxt, instructionsStyle).setOrigin(0.5);
@@ -40,9 +39,7 @@ export class DoubleClick extends BaseScene {
     }
     const cueBtn = this.add.text(this.scale.width / 2 - 200, this.scale.height / 2 + 150, cueBtnTxt[0]).setStyle(cueBtnStyle).setPadding(10).setOrigin().setInteractive().setState('0');
     
-    let blinkInterval;
-
-    // On click, if double click end game
+    // Define visual help button behavior
     cueBtn.on('pointerdown', () => {
       // Update state
       // @ts-ignore
@@ -66,7 +63,8 @@ export class DoubleClick extends BaseScene {
     // Create duck
     const duck = this.add.image(this.scale.width / 2 + 200, this.scale.height / 2, 'duckyGS').setInteractive();
 
-    // Set hover behavior
+    // Set duck behavior
+    // On click, if double click end game
     duck.on('pointerdown', () => {
 			if (!this.checkDoubleClick()) return;
 

@@ -9,7 +9,7 @@ a {
 
 h1 {
 	text-align: center;
-	color: #7a0c7c;
+	color: #008000;
 }
 
 .infos {
@@ -19,25 +19,25 @@ h1 {
 }
 
 .highlight {
-	color: #7a0c7c;
+	color: #008000;
 	font-weight: 600;
 }
 
 .input-tip {
-	color: #7a0c7c;
+	color: #006600;
 	font-style: italic;
 }
 
 .tooltip {
 	position: relative;
 	display: inline-block;
-	border-bottom: 1px dotted #7a0c7c;
+	border-bottom: 1px dotted #006600;
 }
 
 .tooltip .tooltip-text {
 	visibility: hidden;
 	width: 140px;
-	background-color: #5b085cd5;
+	background-color: #00660080;
 	color: #fff;
 	text-align: center;
 	border-radius: 6px;

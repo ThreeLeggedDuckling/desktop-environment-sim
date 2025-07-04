@@ -1,20 +1,19 @@
 import { BaseScene } from './BaseScene.js';
+import { SceneReturnBtn } from '../gameObjects/Buttons.js';
 
 export class DragAndDrop extends BaseScene {
   constructor() {
     super({ key: 'DragAndDrop' });
   }
 
-  preload() {
-		super.preload();
-    this.load.image('ducky', 'assets/misc/ducky.png');
-	}
-
   create() {
     super.create();
 
     // Create instructions display
     this.instructions = this.add.text(this.scale.width / 2, 100, 'Déplacer le canard dans le cadre', { fontStyle: 'bold', fontSize: '40px' }).setOrigin(0.5);
+
+    // Add return to menu button
+    const returnBtn = new SceneReturnBtn(this, 'ExercicesMenu', 'Menu exercices').setPosition(200, 200);
     
     // Create zone and initial graphics
     this.rightZone = new Phaser.Geom.Rectangle(this.scale.width / 3 * 2, this.scale.height / 3, 400, 600);

@@ -18,15 +18,19 @@ export class BaseScene extends Phaser.Scene {
 		this.load.image('restore', 'assets/icons/restoreWindow.png');
 		this.load.image('winMenu', 'assets/icons/win_menu.png');
     
-    // Placeholder icons
-		this.load.image('pixelCatG', 'assets/placeholders/pixelCatGrey.png');
-		this.load.image('pixelCatO', 'assets/placeholders/pixelCatOrange.png');
-		this.load.image('pixelDuck', 'assets/placeholders/pixelDuck.png');
-
-    // Picture files assets
+    // Misc
 		this.load.image('astronautJPG', 'assets/pictures/astronaut.jpg');
 		this.load.image('chickenJPG', 'assets/pictures/chicken.jpg');
+    this.load.image('desktopBg', 'assets/pictures/leafs.jpg');
+    this.load.image('ducky', 'assets/misc/ducky.png');
+    this.load.image('duckyGS', 'assets/misc/duckyGS.png');
 		this.load.image('flowersPNG', 'assets/pictures/flowers.png');
+    this.load.image('returnArrow', 'assets/misc/returnArrowWhite.png');
+    
+    // Placeholder icons
+    this.load.image('pixelCatG', 'assets/placeholders/pixelCatGrey.png');
+    this.load.image('pixelCatO', 'assets/placeholders/pixelCatOrange.png');
+    this.load.image('pixelDuck', 'assets/placeholders/pixelDuck.png');
   }
   
   create() {
