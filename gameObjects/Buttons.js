@@ -42,7 +42,7 @@ export class SceneSelectionBtn extends Phaser.GameObjects.Container {
     this.label = scene.add.text(0, 0, legend, { fontSize: '18px', align: 'center', wordWrap: { width: this.bg.width -5, useAdvancedWrap: true } }).setOrigin(0.5);
     this.add([this.bg, this.label]);
 
-    this.setSize(width, height).setInteractive()
+    this.setSize(width, height).setInteractive({ useHandCursor: true })
       .on('pointerover', () => { this.bg.setFillStyle(0x2db300) })    // Add tween ?
       .on('pointerout', () => { this.bg.setFillStyle(fillColor) })    // Add tween ?
       .on('pointerup', () => { scene.scene.start(target) });
@@ -76,7 +76,7 @@ export class SceneReturnBtn extends Phaser.GameObjects.Container {
     Phaser.Display.Align.In.LeftCenter(this.icon, this);
     Phaser.Display.Align.In.RightCenter(this.label, this);
 
-    this.setInteractive()
+    this.setInteractive({ useHandCursor: true })
       .on('pointerover', () => { this.updateColor(0x33ff33); })
       .on('pointerout', () => { this.updateColor(0xffffff) })
       .on('pointerup', () => { scene.scene.start(target) });
