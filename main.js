@@ -5,7 +5,6 @@ import { DesktopScene } from './scenes/DesktopScene.js'
 import { DragAndDrop } from './scenes/DragAndDrop.js'
 import { DoubleClick } from './scenes/DoubleClick.js'
 import { TestScene } from './scenes/TestScene.js'
-import { BaseScene } from './scenes/BaseScene.js';
 
 let config = {
   type: Phaser.AUTO,
@@ -17,10 +16,10 @@ let config = {
     height: 1080,
   },
   // ALL SCENES
-  // scene: [MainMenu, ExercicesMenu, DesktopScene, DragAndDrop, DoubleClick]
-  scene: [TestScene]  // TEST
+  scene: [MainMenu, ExercicesMenu, DesktopScene, DragAndDrop, DoubleClick]
+  // scene: [TestScene]  // TEST
   // scene: [DesktopScene]  // SANDBOX
-  // scene: [DoubleClick]   // EXERCICE
+  // scene: []   // EXERCICE
 }
 
 const game = new Phaser.Game(config);
