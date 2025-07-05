@@ -195,7 +195,7 @@ export class DesktopScene extends BaseScene {
     // PLACEHOLDER TASKBAR
     this.taskBar = new TaskBar(this, [
       new FolderObject('Explorateur de fichiers'),
-      new FileObject('Photos', DEFAULT_FILETYPES.PNG, 'catG'),
+      new FileObject('Photos', DEFAULT_FILETYPES.PNG, ''),
     ]);
 
 

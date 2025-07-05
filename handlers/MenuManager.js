@@ -162,18 +162,11 @@ export class ContextualManager {
 }
 
 
-
-
-
-
-
-
-
 /**
  * Add new menu handler to the scene.
  * @param {Phaser.Scene} scene 
  */
 export function initContextualManager(scene) {
 	//@ts-ignore
-	if (!scene.CONTEXTUAL_MANAGER) scene.CONTEXTUAL_MANAGER = new ContextualManager(scene);
+	scene.CONTEXTUAL_MANAGER = new ContextualManager(scene);
 }

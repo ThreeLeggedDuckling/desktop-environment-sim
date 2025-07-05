@@ -120,6 +120,7 @@ export class TaskBar extends Phaser.GameObjects.Container {
     const contextual = new ContextMenu(this.scene, posX, posY, [
       new OptionObject('Gestionnaire des tâches', openTaskManager),
       new OptionObject('Paramètres de la barre des tâches', openTaskBarSettings),
+      new OptionObject('Retour au menu principal', () => { this.scene.scene.start('MainMenu') }),
     ]);
     
     // Update menu position to be above taskbar and fully visible
