@@ -1,6 +1,6 @@
 import { BaseScene } from "./BaseScene.js";
 
-import { initMenuManger } from "../handlers/MenuManager.js";
+import { initContextualManager } from "../handlers/MenuManager.js";
 
 import { ContextMenu, OptionObject } from "../gameObjects/ContextMenu.js";
 import { DialogWindow, WindowObject } from "../gameObjects/Windows.js";
@@ -19,7 +19,7 @@ export class TestScene extends BaseScene {
 
 	create() {
 		super.create();
-		initMenuManger(this);
+		initContextualManager(this);
 
 		const poule = new DesktopIcon(this, 50, 110, new FileObject('test1', DEFAULT_FILETYPES.JPG, 'chickenJPG'));
 		const fleurs = new DesktopIcon(this, 150, 110, new FileObject('test2', DEFAULT_FILETYPES.PNG, 'flowersPNG'));
